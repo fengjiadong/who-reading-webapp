@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.who.read.reading.mapper.BookMapper">
+
+    <resultMap id="book" type="com.who.read.reading.entity.Book">
+        <result column="id" jdbcType="INTEGER" property="id"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="img" jdbcType="VARCHAR" property="img"/>
+        <result column="num" jdbcType="VARCHAR" property="num"/>
+        <result column="author" jdbcType="VARCHAR" property="author"/>
+        <result column="introduce" jdbcType="VARCHAR" property="introduce"/>
+    </resultMap>
+
+    <select id="selectBookById" resultType="com.who.read.reading.entity.Book">
+        select * from book where id = #{id}
+    </select>
+
+    <select id="selectBookListByName" resultType="com.who.read.reading.entity.Book">
+        select * from book where `name` = #{name}
+    </select>
+
+    <insert id="addBook" parameterType="com.who.read.reading.entity.Book">
+        INSERT INTO book(`name`,author,num,img,introduce) VALUES(#{name},#{author},#{num},#{img},#{introduce})
+    </insert>
+</mapper>
