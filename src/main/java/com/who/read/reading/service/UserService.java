@@ -35,4 +35,9 @@ public class UserService {
 		LOGGER.info("UserService:selectUserList");
 		return userMapper.selectUserList();
 	}
+
+	public List<User> login(String userName, String password) {
+		LOGGER.info("UserService:login");
+		return userMapper.login(userName, password);
+	}
 }

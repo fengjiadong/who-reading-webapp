@@ -2,8 +2,8 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.who.read.reading.mapper.UserMapper">
 
-    <resultMap id="book" type="com.who.read.reading.entity.User">
-        <result column="id" jdbcType="INTEGER" property="id"/>
+    <resultMap id="users" type="com.who.read.reading.entity.User">
+        <id property="id" column="id" />
         <result column="name" jdbcType="VARCHAR" property="name"/>
         <result column="age" jdbcType="INTEGER" property="age"/>
         <result column="userName" jdbcType="VARCHAR" property="userName"/>
@@ -12,15 +12,23 @@
         <result column="gender" jdbcType="VARCHAR" property="gender"/>
         <result column="password" jdbcType="VARCHAR" property="password"/>
         <result column="img" jdbcType="VARCHAR" property="img"/>
+        <result  column="email" jdbcType="VARCHAR" property="email"/>
     </resultMap>
 
     <select id="getUserByName" resultType="com.who.read.reading.entity.User">
         select * from `user` where `name` = #{name}
     </select>
 
-    <select id="selectUserList" resultType="com.who.read.reading.entity.Book">
-        select * from book
+    <select id="selectUserList" resultType="com.who.read.reading.entity.User">
+        select * from user
     </select>
+    <!--登录方法-->
+    <select id="login" resultType="com.who.read.reading.entity.User">
+        select * from `user` where (`userName` = #{userName} or phone = #{userName} or email = #{userName})
+and password = #{password}
+--       select * from `user`
+    </select>
+
 
     <!--<insert id="addBook" parameterType="com.who.read.reading.entity.Book">-->
         <!--INSERT INTO book(`name`,author,num,img,introduce) VALUES(#{name},#{author},#{num},#{img},#{introduce})-->

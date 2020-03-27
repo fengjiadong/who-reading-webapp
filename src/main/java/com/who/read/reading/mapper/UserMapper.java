@@ -2,6 +2,7 @@ package com.who.read.reading.mapper;
 
 import com.who.read.reading.entity.Book;
 import com.who.read.reading.entity.User;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -17,6 +18,8 @@ public interface UserMapper {
 	List<User> getUserByName(String name);
 
 	List<User> selectUserList();
+
+	List<User> login(@Param("userName")String userName,@Param("password")String password);
 
 
 }

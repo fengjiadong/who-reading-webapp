@@ -10,6 +10,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * @Classname JsonManager
@@ -37,13 +38,48 @@ public class JsonManager {
 
 	/**
 	 * 传入一个Entity类实例，得到该类的Json格式
-	 *
 	 * @param o
 	 * @return
 	 */
 	public static JSONObject getJson(Object o) {
+		return getJsonExcludeField(o, null);
+	}
+
+	/**
+	 * 传入一个Entity类实例，得到该类的Json格式
+	 *
+	 * @param o
+	 * @param key 排除的字段
+	 * @return
+	 */
+	public static JSONObject getJsonExcludeField(Object o, List<String> key) {
 		JSONObject jsonObject = new JSONObject();
 		String[] filedName = getFiledName(o);
+		for (int i = 0; i < filedName.length; i++) {
+			try {
+				if (key.contains(filedName[i])) {
+					continue;
+				}
+				Object fieldValueByName = getFieldValueByName(filedName[i], o);
+				jsonObject.put(filedName[i], fieldValueByName);
+			} catch (Exception e) {
+				jsonObject.put(filedName[i], "");
+			}
+		}
+		return jsonObject;
+	}
+
+	/**
+	 * 传入一个Entity类实例，得到该类的Json格式
+	 *
+	 * @param o
+	 * @param key 需要的字段
+	 * @return
+	 */
+	public static JSONObject getJsonNeedField(Object o, List<String> key) {
+		JSONObject jsonObject = new JSONObject();
+		String[] filedName ={};
+		filedName = key.toArray(filedName);
 		for (int i = 0; i < filedName.length; i++) {
 			try {
 				Object fieldValueByName = getFieldValueByName(filedName[i], o);
@@ -54,6 +90,7 @@ public class JsonManager {
 		}
 		return jsonObject;
 	}
+
 
 	/**
 	 *      

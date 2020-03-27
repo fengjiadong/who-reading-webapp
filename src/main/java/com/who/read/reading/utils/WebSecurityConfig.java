@@ -32,7 +32,7 @@ public class WebSecurityConfig implements WebMvcConfigurer {
 	public void addInterceptors(InterceptorRegistry registry) {
 		registry.addInterceptor(securityInterceptor)
 				.addPathPatterns("/**")
-				.excludePathPatterns("/login/**","/hazelcast/**","/logged/**","/error/**");
+				.excludePathPatterns("/api/login/**","/hazelcast/**","/api/logged/**","/error/**");
 	}
 
 
@@ -46,14 +46,14 @@ public class WebSecurityConfig implements WebMvcConfigurer {
 				throws Exception {
 			System.out.println("接收到请求"+request.getMethod()+":"+request.getRequestURI());
 			HttpSession session = request.getSession();
-			if (session.getAttribute(SESSION_KEY) != null) {
-				System.out.println("已登录");
+			Object attribute = session.getAttribute(SESSION_KEY);
+			if (attribute != null) {
+				System.out.println("已登录,用户" + attribute);
 				return true;
 			}
 			System.out.println("未登录");
 			// 跳转登录
-			String url = "/logged";
-			response.sendRedirect(url);
+			request.getRequestDispatcher("/api/logged").forward(request,response);
 			return false;
 		}
 		@Override
