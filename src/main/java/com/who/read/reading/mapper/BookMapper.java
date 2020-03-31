@@ -19,8 +19,12 @@ public interface BookMapper {
 	 */
 	Book selectBookById(int id);
 
-	List<Book> selectBookListByName(int id);
+	List<Book> selectBookListByName(String name);
 
 	Integer addBook(Book book);
+
+	List<Book> selectBookList(Book book);
+
+	Integer updateById(Book book);
 
 }

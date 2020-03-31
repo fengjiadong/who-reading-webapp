@@ -9,6 +9,7 @@
         <result column="num" jdbcType="VARCHAR" property="num"/>
         <result column="author" jdbcType="VARCHAR" property="author"/>
         <result column="introduce" jdbcType="VARCHAR" property="introduce"/>
+        <result column="type" jdbcType="VARCHAR" property="type"/>
     </resultMap>
 
     <select id="selectBookById" resultType="com.who.read.reading.entity.Book">
@@ -16,10 +17,69 @@
     </select>
 
     <select id="selectBookListByName" resultType="com.who.read.reading.entity.Book">
-        select * from book where `name` = #{name}
+        select * from book where `name` like  CONCAT(CONCAT('%', #{name}), '%')
     </select>
 
     <insert id="addBook" parameterType="com.who.read.reading.entity.Book">
-        INSERT INTO book(`name`,author,num,img,introduce) VALUES(#{name},#{author},#{num},#{img},#{introduce})
+        INSERT INTO book(`name`,author,num,img,introduce,type) VALUES(#{name},#{author},#{num},#{img},#{introduce},#{type})
     </insert>
+
+    <select id="selectBookList" resultType="com.who.read.reading.entity.Book">
+        select b.id,b.`name`,b.author,b.img,b.introduce,b.num,t.`name` as type from
+        book  b
+        JOIN type t on b.type = t.id
+        <where>
+        <if test="name != null">
+            and b.`name` = #{name}
+        </if>
+        <if test="author != null">
+            and b.`author` = #{author}
+        </if>
+        <if test="num != null">
+            and b.`num` = #{num}
+        </if>
+        <if test="img != null">
+            and b.`img` = #{img}
+        </if>
+        <if test="introduce != null">
+            and b.`introduce` = #{introduce}
+        </if>
+        <if test="id != null">
+            and b.`id` = #{id}
+        </if>
+        <if test="type != null">
+            and b.`type` = #{type}
+        </if>
+        </where>
+    </select>
+
+    <update id="updateById" parameterType="com.who.read.reading.entity.Book">
+        UPDATE book SET
+        id = #{id}
+        <if test="name != null">
+            ,`name` = #{name}
+        </if>
+        <if test="author != null">
+            , `author` = #{author}
+        </if>
+        <if test="num != null">
+            , `num` = #{num}
+        </if>
+        <if test="img != null">
+            , `img` = #{img}
+        </if>
+        <if test="introduce != null">
+            , `introduce` = #{introduce}
+        </if>
+        <if test="id != null">
+            , `id` = #{id}
+        </if>
+        <if test="type != null">
+            , `type` = #{type}
+        </if>
+
+        WHERE id = #{id}
+
+    </update>
+
 </mapper>

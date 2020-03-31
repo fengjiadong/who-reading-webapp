@@ -25,16 +25,24 @@ public class BookService {
 	public Book selectBookById(int id) {
 		LOGGER.info("进入BookService类的selectBookById方法");
 		return bookMapper.selectBookById(id);
-
 	}
-
-	public List<Book> selectBookListByName(int name) {
-		LOGGER.info("进入BookService类的selectBookListByName方法");
+	public List<Book> selectBookListByName(String name) {
+		LOGGER.info("进入BookService类的selectBookListByNamed方法");
 		return bookMapper.selectBookListByName(name);
 	}
 
 	public Integer addBook(Book book) {
 		LOGGER.info("进入BookService类的addBook方法");
 		return bookMapper.addBook(book);
+	}
+
+	public List<Book> selectBookList(Book book){
+		LOGGER.info("进入BookService类的selectBookList方法");
+		return bookMapper.selectBookList(book);
+	}
+
+	public Integer updateById(Book book) {
+		LOGGER.info("进入BookService类的updateById方法");
+		return bookMapper.updateById(book);
 	}
 }
