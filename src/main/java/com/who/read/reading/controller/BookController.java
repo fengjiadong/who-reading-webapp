@@ -5,24 +5,16 @@ import com.who.read.reading.service.BookService;
 import com.who.read.reading.utils.BookUtils;
 import com.who.read.reading.utils.JsonManager;
 import com.who.read.reading.utils.ServiceUtils;
-import org.apache.catalina.User;
 import org.json.JSONObject;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 /**
@@ -103,7 +95,6 @@ public class BookController {
 			System.out.println(bookInfo.toString());
 		}
 		return "";
-//		return ServiceUtils.returnRestlt("1", "新增"+resultCount+"本书,类型是"+type+"。", resultCount).toString();
 	}
 
 

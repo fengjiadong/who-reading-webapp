@@ -6,6 +6,9 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 /**
  * @Classname Test
@@ -56,5 +59,76 @@ public class Test {
 		Elements img = fmimg.getElementsByTag("img");
 		String src = img.attr("src");
 		System.out.println("图片：" + src);
+	}
+
+	@org.junit.jupiter.api.Test
+	public void calcolate(){
+
+
+		ArrayList<String> xz = num();
+		for (String s : xz) {
+			System.out.print(s+"-");
+		}
+		System.out.println("-----------------");
+		sum(xz);
+
+
+	}
+
+	public void sum(ArrayList<String> xz) {
+		Boolean is = false;
+		Integer count = 0;
+		while (!is) {
+			count++;
+			ArrayList<String> results = num();
+			Integer isClick = 0;
+			for (String result : results) {
+				boolean contains = xz.contains(result);
+				if(contains){
+					System.out.print(result+"-");
+					isClick++;
+				}
+			}
+			if (isClick > 0) {
+				System.out.println();
+			}
+			if (isClick == 6) {
+				is = true;
+				System.out.println("执行了"+count);
+			}
+		}
+	}
+
+	public ArrayList<String> num(){
+		int max=33,min=1;
+		ArrayList<Integer> objects = new ArrayList<>();
+		for (int i = 0; i < 6; i++) {
+			int ran2 = (int) (Math.random()*(max-min)+min);
+			while (objects.contains(ran2)) {
+				ran2 = (int) (Math.random()*(max-min)+min);
+			}
+			objects.add(ran2);
+		}
+		Collections.sort(objects, new SortByAge()); //按照年龄排序
+		ArrayList<String> list = new ArrayList<>();
+		for (Integer num : objects) {
+			if (num < 10) {
+				list.add("0" + num);
+			}else{
+				list.add(num + "");
+			}
+		}
+		return list;
+	}
+	//年龄排序
+	class SortByAge implements Comparator<Integer> {
+		@Override
+		public int compare(Integer u1, Integer u2) {
+			if(u1 > u2){
+				return 1;
+			}
+			return -1;
+		}
+
 	}
 }
