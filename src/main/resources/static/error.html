@@ -2,13 +2,13 @@
 <html xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8"/>
-    <title>Hello</title>
+    <title>页面访问出错</title>
 
 </head>
 <body>
-<h1>hello</h1>
+<h1 >error</h1>
+<h1 th:text="${#httpServletRequest.getParameter('code')}"></h1>
 <div th:text="${#httpServletRequest.getRequestURL() +'?'+ #httpServletRequest.getQueryString() }"></div>
 <div th:text="${#httpServletRequest.requestURL +'?'+ #httpServletRequest.queryString }"></div>
-<span th:text="${key}"></span>
 </body>
 </html>

@@ -1,0 +1,105 @@
+package com.who.read.reading.who.datamodel;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * @Classname EntityCondition
+ * @date 2020/5/27 4:27 PM
+ * @Created by fengjiadong
+ */
+public class EntityCondition {
+	public EntityCondition(String typeId) {
+		this.typeId = typeId;
+	}
+
+	// 设置Ids
+	private String id;
+	private List<String> ids;
+
+	/**
+	 * 不在该id集合中
+	 */
+	private List<String> ninIds;
+
+	private String typeId;
+	private String name;
+	private String displayName;
+	private Map<String, Object> properties;
+
+	private String sql;
+	private String sqlDispaly;
+
+	public String getTypeId() {
+		return typeId;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public Map<String, Object> getProperties() {
+		return properties;
+	}
+
+	public void setProperties(Map<String, Object> properties) {
+		this.properties = properties;
+	}
+
+	public void setProperty(String key, String value) {
+		if (this.properties == null) {
+			this.properties = new HashMap<>();
+		}
+		this.properties.put(key, value);
+	}
+
+	public String getDisplayName() {
+		return displayName;
+	}
+
+	public void setDisplayName(String displayName) {
+		this.displayName = displayName;
+	}
+
+	public List<String> getIds() {
+		return ids;
+	}
+
+	public void setIds(List<String> ids) {
+		this.ids = ids;
+	}
+
+	public void setId(String id) {
+		this.ids = new ArrayList<>();
+		this.ids.add(id);
+	}
+
+	public void setAddId(String id) {
+		if(this.ids == null){
+			this.ids = new ArrayList<>();
+		}
+		this.ids.add(id);
+	}
+
+	public String getSql() {
+		return sql;
+	}
+
+	public void setSql(String sql) {
+		this.sql = sql;
+	}
+
+	public String getSqlDispaly() {
+		return sqlDispaly;
+	}
+
+	public void setSqlDispaly(String sqlDispaly) {
+		this.sqlDispaly = sqlDispaly;
+	}
+}

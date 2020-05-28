@@ -22,7 +22,8 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/user")
 public class UserController {
-	private static final Logger LOGGER = LoggerFactory.getLogger(BookController.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
+
 
 	@Autowired
 	UserService userService;
