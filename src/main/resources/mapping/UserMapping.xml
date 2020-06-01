@@ -15,8 +15,8 @@
         <result  column="email" jdbcType="VARCHAR" property="email"/>
     </resultMap>
 
-    <select id="getUserByName" resultType="com.who.read.reading.entity.User">
-        select * from `user` where `name` = #{name}
+    <select id="getUserByUserName" resultType="com.who.read.reading.entity.User">
+        select * from `user` where `userName` = #{userName}
     </select>
 
     <select id="selectUserList" resultType="com.who.read.reading.entity.User">

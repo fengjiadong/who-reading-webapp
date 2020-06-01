@@ -1,14 +1,15 @@
 server:
-   port:8080
+  servlet:
+    session:
+      timeout: 30m
 spring:
   thymeleaf:
-    cache: true  #
+    cache: false  #
   datasource:
     username: root
     password: 1598
     url: jdbc:mysql://localhost:3306/who_read?useUnicode=true&characterEncoding=UTF-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
     driver-class-name: com.mysql.cj.jdbc.Driver
-
 mybatis:
   mapper-locations: classpath:mapping/*Mapping.xml
   configuration:
@@ -20,4 +21,3 @@ logging:
     com:
       example:
         mapper : debug
-

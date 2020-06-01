@@ -1,4 +1,4 @@
-package com.who.read.reading.utils;
+package com.who.read.reading.configuration;
 
 import org.json.JSONObject;
 

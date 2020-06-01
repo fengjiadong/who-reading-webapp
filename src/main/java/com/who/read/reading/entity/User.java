@@ -1,12 +1,16 @@
 package com.who.read.reading.entity;
 
+import org.json.JSONObject;
+
+import java.util.List;
+
 /**
  * @Classname User
  * @date 2020/3/26 5:15 PM
  * @Created by fengjiadong
  */
 public class User {
-	private Integer id;
+	private String id;
 	private String name;
 	private Integer age;
 	private String userName;
@@ -17,6 +21,16 @@ public class User {
 	private String img;
 	private String email;
 
+	private List<Role> roles;
+
+	public List<Role> getRoles() {
+		return roles;
+	}
+
+	public void setRoles(List<Role> roles) {
+		this.roles = roles;
+	}
+
 	public String getEmail() {
 		return email;
 	}
@@ -25,11 +39,11 @@ public class User {
 		this.email = email;
 	}
 
-	public Integer getId() {
+	public String getId() {
 		return id;
 	}
 
-	public void setId(Integer id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 
@@ -99,7 +113,7 @@ public class User {
 
 	@Override
 	public String toString() {
-		return "User{" +
+		return "{" +
 				"id=" + id +
 				", name='" + name + '\'' +
 				", age=" + age +
@@ -110,5 +124,19 @@ public class User {
 				", password='" + password + '\'' +
 				", img='" + img + '\'' +
 				'}';
+	}
+
+	public JSONObject getJson() {
+		JSONObject user = new JSONObject();
+		user.put("id", this.id);
+		user.put("name", this.name);
+		user.put("age", this.age);
+		user.put("userName", this.userName);
+		user.put("idNumber", this.idNumber);
+		user.put("phone", this.phone);
+		user.put("gender", this.gender);
+		user.put("password", this.password);
+		user.put("img", this.img);
+		return user;
 	}
 }

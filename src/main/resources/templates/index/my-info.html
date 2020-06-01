@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+	<meta charset="UTF-8">
+	<title>个人中心</title>
+	<link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+	<!-- jQuery (Bootstrap 的所有 JavaScript 插件都依赖 jQuery，所以必须放在前边) -->
+	<script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
+	<!-- 加载 Bootstrap 的所有 JavaScript 插件。你也可以根据需要只加载单个插件。 -->
+	<script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</head>
+<body>
+	<div class="container">
+		<div class="row">
+			<div class="col-lg-3">
+				<p class="">姓名:</p>
+			</div>
+			<div class="col-lg-3">
+				<p><span th:text="${session.user.name}"></span></p>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-lg-3">
+				<p class="">权限:</p>
+			</div>
+			<div class="col-lg-3">
+				<p class="" th:each="role : ${session.roles}" th:text="${role.name}+${role.displayName}"></p>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

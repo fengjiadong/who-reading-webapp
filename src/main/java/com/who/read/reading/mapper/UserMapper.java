@@ -15,7 +15,7 @@ import java.util.List;
 @Repository
 public interface UserMapper {
 
-	List<User> getUserByName(String name);
+	List<User> getUserByUserName(String userName);
 
 	List<User> selectUserList();
 

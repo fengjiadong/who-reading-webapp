@@ -3,6 +3,7 @@ package com.who.read.reading.service;
 import com.who.read.reading.entity.Book;
 import com.who.read.reading.entity.User;
 import com.who.read.reading.mapper.BookMapper;
+import com.who.read.reading.mapper.RoleMapper;
 import com.who.read.reading.mapper.UserMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,11 +25,19 @@ public class UserService {
 	BookMapper bookMapper;
 
 	@Autowired
+	RoleMapper roleMapper;
+
+	@Autowired
 	UserMapper userMapper;
 
-	public List<User> getUserByName(String name) {
+
+	public List<User> getUserByUserName(String name) {
 		LOGGER.info("UserService:getUserByName");
-		return userMapper.getUserByName(name);
+		List<User> userByName = userMapper.getUserByUserName(name);
+		for (User user : userByName) {
+			user.setRoles(roleMapper.getUserRole(userByName.get(0).getId()));
+		}
+		return userByName;
 	}
 
 	public List<User> selectUserList() {

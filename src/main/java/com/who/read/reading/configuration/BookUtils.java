@@ -1,4 +1,4 @@
-package com.who.read.reading.utils;
+package com.who.read.reading.configuration;
 
 import com.who.read.reading.entity.Book;
 import com.who.read.reading.service.BookService;

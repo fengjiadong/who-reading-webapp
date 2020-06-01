@@ -2,9 +2,9 @@ package com.who.read.reading.controller;
 
 import com.who.read.reading.entity.Book;
 import com.who.read.reading.service.BookService;
-import com.who.read.reading.utils.BookUtils;
-import com.who.read.reading.utils.JsonManager;
-import com.who.read.reading.utils.ServiceUtils;
+import com.who.read.reading.configuration.BookUtils;
+import com.who.read.reading.configuration.JsonManager;
+import com.who.read.reading.configuration.ServiceUtils;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

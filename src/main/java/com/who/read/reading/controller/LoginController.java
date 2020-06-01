@@ -2,18 +2,15 @@ package com.who.read.reading.controller;
 
 import com.who.read.reading.entity.User;
 import com.who.read.reading.service.UserService;
-import com.who.read.reading.utils.JsonManager;
-import com.who.read.reading.utils.ServiceUtils;
-import com.who.read.reading.utils.WebSecurityConfig;
+import com.who.read.reading.configuration.JsonManager;
+import com.who.read.reading.configuration.ServiceUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,11 +32,11 @@ public class LoginController {
 		LOGGER.info("LoginController:login");
 		List<User> userList = userService.login(userName, password);
 		if (userList == null || userList.isEmpty()) {
-			return ServiceUtils.returnRestlt("0", "登录失败。", userName).toString();
+			return ServiceUtils.returnRestlt("0", "账号或密码不正确。", "账号或密码不正确。").toString();
 		}
 		User user = userList.get(0);
-		session.setAttribute(WebSecurityConfig.SESSION_KEY, user.getName());
-		Object attribute = session.getAttribute(WebSecurityConfig.SESSION_KEY);
+		session.setAttribute("userName", user.getName());
+		Object attribute = session.getAttribute("userName");
 		LOGGER.info("login-" + attribute);
 		List<String> filed = new ArrayList<>();
 		filed.add("password");
@@ -52,7 +49,7 @@ public class LoginController {
 	@RequestMapping("/logged")
 	public Object logged(HttpSession session) {
 		LOGGER.info("LoginController:logged");
-		Object userName = session.getAttribute(WebSecurityConfig.SESSION_KEY);
+		Object userName = session.getAttribute("userName");
 		if (userName == null) {
 			return ServiceUtils.returnRestlt("403", "未登录，请登录后再尝试。", "/login").toString();
 		}else{
@@ -61,11 +58,13 @@ public class LoginController {
 	}
 
 	@RequestMapping("/logout")
-	public String logout(HttpSession session) {
+	public String logout(HttpSession session, HttpServletRequest request) {
 		// 移除session
 		LOGGER.info("LoginController:logout");
-		session.removeAttribute(WebSecurityConfig.SESSION_KEY);
-		return "redirect:/api/logout";
+		session.removeAttribute("userName");
+		String contentType = request.getAuthType();
+		System.out.println(contentType);
+		return ServiceUtils.returnRestlt("1", "退出登录成功。","退出登录成功！").toString();
 	}
 
 

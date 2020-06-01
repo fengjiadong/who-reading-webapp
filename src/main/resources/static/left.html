@@ -1,0 +1,102 @@
+<link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+
+<!-- jQuery (Bootstrap 的所有 JavaScript 插件都依赖 jQuery，所以必须放在前边) -->
+<script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
+<!-- 加载 Bootstrap 的所有 JavaScript 插件。你也可以根据需要只加载单个插件。 -->
+<script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script src="/js/bootstrap-treeview.js"></script>
+<meta charset="UTF-8">
+<div id="groupTree" class="group_tree" >
+	<div class="div_group" id="div_group"></div>
+</div>
+<script>
+	var tree =[{name:"1"}];
+	$(function () {
+		$.ajax({
+			url: "/menu/allMenu",
+			type: "POST",
+			dataType: "json",
+			success: function(data) {
+				console.log(data)
+				tree = data;
+				$('#div_group').treeview({
+					color : "#428bca",
+					enableLinks: false,
+					data : tree,
+					emptyIcon:"glyphicon glyphicon-asterisk",
+					onNodeSelected : function(event, node) {
+						// document.getElementById(node.seq).scrollIntoView();
+						console.log('onNodeSelected')
+					},
+					onNodeUnselected:function (event, node) {
+						console.log('onNodeUnselected')
+						// var anh = $('#top').offset().top;
+						// debugger
+						// $("#content").stop().animate({scrollTop:anh},400);
+					}
+				});
+			}
+		})
+
+	})
+	// var tree = [
+	// 	{
+	// 		name: "Parent 1",
+	// 		selectable:false,
+	// 		state:{
+	// 			expanded:false
+	// 		},
+	// 		// icon: "glyphicon glyphicon-stop",
+	// 		selectedIcon: "glyphicon glyphicon-stop",
+	// 		href: "javascript:checked()",
+	// 		nodes: [
+	// 			{
+	// 				name: "Child 1",
+	// 				selectable:false,
+	// 				nodes: [
+	// 					{
+	// 						name: "Grandchild 1"
+	// 					},
+	// 					{
+	// 						name: "Grandchild 2"
+	// 					}
+	// 				]
+	// 			},
+	// 			{
+	// 				name: "Child 2"
+	// 			}
+	// 		]
+	// 	},
+	// 	{
+	// 		name: "Parent 2",
+	//
+	// 		state:{
+	// 			// checked:true
+	// 			// expanded:false
+	// 			// selected:true
+	// 			disabled:true,
+	// 		},
+	// 	},
+	// 	{
+	// 		name: "Parent 3"
+	// 	},
+	// 	{
+	// 		name: "Parent 4"
+	// 	},
+	// 	{
+	// 		name: "Parent 5"
+	// 	}
+	// ];
+	//
+
+	function checked() {
+		console.log("选中")
+	}
+
+	function getMenu() {
+
+
+	}
+
+</script>
+
