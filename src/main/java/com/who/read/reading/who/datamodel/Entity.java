@@ -1,5 +1,6 @@
 package com.who.read.reading.who.datamodel;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -10,8 +11,8 @@ import java.util.Map;
 
 public class Entity {
 
-	public Entity(String id) {
-		this.id = id;
+	public Entity(String typeId) {
+		this.typeId = typeId;
 	}
 
 	private String id;
@@ -21,6 +22,8 @@ public class Entity {
 	private Map<String, Object> properties;
 	private Map<String, Object> displays;
 
+	public Entity() {
+	}
 
 
 	public String getId() {
@@ -48,6 +51,9 @@ public class Entity {
 	}
 
 	public Map<String, Object> getProperties() {
+		if(this.properties == null){
+			this.properties = new HashMap<>();
+		}
 		return properties;
 	}
 
@@ -55,6 +61,13 @@ public class Entity {
 		return this.properties.get(key);
 	}
 
+	public Entity setProperty(String key ,Object value) {
+		if(this.properties == null){
+			this.properties = new HashMap<>();
+		}
+		this.properties.put(key, value);
+		return this;
+	}
 	public void setProperties(Map<String, Object> properties) {
 		this.properties = properties;
 	}

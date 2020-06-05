@@ -1,4 +1,4 @@
-package com.who.read.reading.controller;
+package com.who.read.reading.configuration.security;
 
 import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
@@ -17,6 +17,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
+ * 被拦截后进入该类
  * @Classname SecurityController
  * @date 2020/5/29 5:43 PM
  * @Created by fengjiadong
@@ -31,8 +32,10 @@ public class SecurityController {
 	public String requireAuthentication(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		SavedRequest savedRequest = requestCache.getRequest(request, response);
 		if (savedRequest != null) {
-			String url = savedRequest.getRedirectUrl();
-			if (StringUtils.endsWithIgnoreCase(url, ".html")) {
+//			String url = savedRequest.getRedirectUrl();
+			String type = request.getHeader("X-Requested-With");
+			System.out.println("访问方式："+type);
+			if(type==null || !type.contains("XMLHttpRequest")){
 				redirectStrategy.sendRedirect(request, response, "/login.html");
 			}
 		}

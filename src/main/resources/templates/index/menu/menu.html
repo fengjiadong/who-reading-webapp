@@ -1,0 +1,383 @@
+<link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+
+<!-- jQuery (Bootstrap 的所有 JavaScript 插件都依赖 jQuery，所以必须放在前边) -->
+<script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
+<!-- 加载 Bootstrap 的所有 JavaScript 插件。你也可以根据需要只加载单个插件。 -->
+<script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+<script src="/js/bootstrap-treeview.js"></script>
+<script src="/js/rightKey.js"></script>
+<link rel="stylesheet" href="/css/rightKey.css">
+<meta charset="UTF-8">
+<br>
+<div class="container">
+	<div class="row">
+		<div class="col-lg-5">
+			<input type="button" class="btn btn-default" value="新增菜单" onclick="createUpShow('add')">
+			<input type="button" class="btn btn-default" value="刷新菜单" onclick="refreshMenu()">
+			<hr>
+			<div id="groupTree" class="group_tree">
+				<div class="div_group" id="div_group"></div>
+			</div>
+		</div>
+		<div class="col-lg-6">
+			<div id="show">
+				<h6>上级菜单名称：
+					<span id="parentNameShow"></span>
+				</h6>
+				<hr>
+				<h6>名称：
+					<span id="nameShow"></span>
+				</h6>
+				<hr>
+				<h6>ico：
+					<span id="icoShow"></span>
+				</h6>
+				<hr>
+				<h6>动作：
+					<span id="actionShow"></span>
+				</h6>
+				<hr>
+				<h6>代码：
+					<span id="codeShow"></span>
+				</h6>
+				<hr>
+				<h6>是否显示：
+					<span id="validityShow"></span>
+				</h6>
+				<hr>
+				<h6>是否禁用：
+					<span id="disabledShow"></span>
+				</h6>
+				<hr>
+				<h6>分组：
+					<span id="siteShow"></span>
+				</h6>
+				<hr>
+				<!--<h6>排序：-->
+				<!--<span id="order"></span>-->
+				<!--</h6>-->
+				<h6>备注：
+					<span id="explainShow"></span>
+				</h6>
+				<hr>
+				<input type="button" class="btn btn-default" value="编辑" onclick="createUpShow('update')">
+				<input type="button" class="btn btn-default" value="删除" onclick="confirmDelete()">
+			</div>
+		</div>
+	</div>
+</div>
+<!-- 模态框（Modal）-->
+<div class="modal fade bs-example-modal-lg" id="createUp" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+	 data-backdrop="false"
+	 aria-hidden="false">
+	<div class="modal-dialog modal-md">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+				<p class="modal-title" id="myModalLabel">编辑菜单</p>
+			</div>
+			<div class="modal-body">
+				<!--菜单-->
+				<ul class="nav nav-tabs" role="tablist">
+					<li role="presentation" class="active">
+						<a href="#menuInfo" aria-controls="menuInfo" role="tab" data-toggle="tab">菜单信息</a>
+					</li>
+					<li role="presentation" class="">
+						<a href="#roleInfo" aria-controls="roleInfo" role="tab" data-toggle="tab">菜单角色</a>
+					</li>
+				</ul>
+				<br>
+				<div class="tab-content">
+					<div role="tabpanel" class="tab-pane active" id="menuInfo">
+						<form class="form-horizontal">
+							<div class="form-group">
+								<label for="parentName" class="col-sm-2 control-label">上级菜单</label>
+								<div class="col-sm-8">
+									<input id="parentName" type="text" class="form-control " disabled placeholder="无">
+								</div>
+							</div>
+
+							<div class="form-group">
+								<label for="name" class="col-sm-2 control-label">名称</label>
+								<div class="col-sm-8">
+									<input id="name" type="text" class="form-control" placeholder="请输入菜单名称">
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="ico" class="col-sm-2 control-label">ico</label>
+								<div class="col-sm-8">
+									<input id="ico" type="text" class="form-control" placeholder="请输入图标">
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="action" class="col-sm-2 control-label">动作</label>
+								<div class="col-sm-8">
+									<input id="action" type="text" class="form-control" placeholder="请输入动作">
+								</div>
+							</div>
+
+							<div class="form-group">
+								<label class="col-sm-2 control-label">是否显示</label>
+								<div class="col-sm-8">
+									<label class="radio-inline">
+										<input type="radio" name="validity" id="validity21" value="1">
+										是
+									</label>
+									<label class="radio-inline">
+										<input type="radio" name="validity" id="validity22" value="0">
+										否
+									</label>
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-2 control-label">是否禁用</label>
+								<div class="col-sm-8">
+									<label class="radio-inline">
+										<input type="radio" name="disabled" id="disabled21" value="1">
+										是
+									</label>
+									<label class="radio-inline">
+										<input type="radio" name="disabled" id="disabled22" value="0">
+										否
+									</label>
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="explain" class="col-sm-2 control-label">备注</label>
+								<div class="col-sm-8">
+									<textarea id="explain" class="form-control" rows="3" placeholder="请输入备注"></textarea>
+								</div>
+							</div>
+						</form>
+					</div>
+					<!--角色信息-->
+					<div role="tabpanel" class="tab-pane " id="roleInfo">
+							<div class="form-group">
+								<div class="col-sm-8 col-sm-offset-1">
+									<select class="form-control">
+										<option>超级管理员</option>
+										<option>员工</option>
+										<option>开发者</option>
+										<option>部门经理</option>
+										<option>部门副经理</option>
+									</select>
+								</div>
+								<div class="col-sm-3">
+									<input type="button" class="btn btn-default" value="添加">
+								</div>
+							</div>
+						<br>
+						<br>
+						<br>
+						<div class="row">
+							<div class="col-sm-10 col-sm-offset-1">
+								<table class="table table-condensed">
+									<tr>
+										<td>超级管理员</td>
+										<td>Admin</td>
+										<td><input type="button" class="btn btn-default" value="移除"></td>
+									</tr>
+									<tr>
+										<td>员工</td>
+										<td>Staff</td>
+										<td><input type="button" class="btn btn-default" value="移除"></td>
+									</tr>
+									<tr>
+										<td>开发者</td>
+										<td>develop</td>
+										<td><input type="button" class="btn btn-default" value="移除"></td>
+									</tr>
+								</table>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!--end-->
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+				<button type="button" class="btn btn-primary" onclick="addMenu()">保存</button>
+			</div>
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal-dialog -->
+</div>
+
+<!-- 模态框（Modal）做确认使用 拥有确定和取消按钮-->
+<div class="modal fade bs-example-modal-sm" id="confirm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+	 aria-hidden="true">
+	<div class="modal-dialog modal-sm">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+				<p class="modal-title" id="confirmShow">操作提醒</p>
+			</div>
+			<div class="modal-body">确定要删除吗？</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+				<button type="button" class="btn btn-primary" onclick="deleteMenu()">确定</button>
+			</div>
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal-dialog -->
+</div>
+<style>
+	/*#show{*/
+	/*border: #DDDDDD 1px solid;*/
+	/*}*/
+	.modal-content {
+		/*width: 400px;*/
+	}
+</style>
+
+<script>
+	var tree = [{name: "1"}];
+	var selectedNode = undefined;
+	$(function () {
+		refreshMenu()
+	})
+
+	function refreshMenu() {
+		selectedNode = undefined;
+		$("#show").hide()
+		$.ajax({
+			url: "/menu/allMenuManager",
+			type: "POST",
+			dataType: "json",
+			success: function (data) {
+				// console.log(data)
+				tree = data;
+				console.log(tree);
+				$('#div_group').treeview({
+					color: "#428bca",
+					enableLinks: false,
+					data: tree,
+					emptyIcon: "glyphicon glyphicon-asterisk",
+					onNodeSelected: function (event, node) {
+						console.log('onNodeSelected:')
+						console.log(event)
+						console.log(node)
+						selectedNode = node;
+						$("#nameShow").html(node.name)
+						$("#actionShow").html(node.action)
+						$("#codeShow").html(node.code)
+						$("#disabledShow").html(node.disabled ? "是" : "否")
+						$("#validityShow").html(node.validity ? "是" : "否")
+						$("#siteShow").html(node.site)
+						// $("#orderShow").html(node.order)
+						$("#explainShow").html(node.explain)
+						$("#icoShow").html(node.ico)
+						$("#parentNameShow").html(node.parentName ? node.parentName : "无")
+						$("#show").show()
+					},
+					onNodeUnselected: function (event, node) {
+						selectedNode = undefined;
+						$("#show").hide()
+						console.log('onNodeUnselected')
+					}
+				});
+			}
+		})
+	}
+
+	function createUpShow(type) {
+		$("#createUp").modal('show');
+		if (type == 'add') {
+			$("#myModalLabel").html("新增菜单")
+			$("#parentName").val(selectedNode == undefined ? "无" : selectedNode.name);
+			// 清空上次显示的情况
+			$("#name").val("");
+			$("#ico").val("");
+			$("#action").val("");
+			$("#explain").val("");
+			var validityArr = $("[name='validity']")
+			validityArr.eq(0).prop("checked", true);
+			validityArr.eq(1).prop("checked", false);
+
+			var disabledArr = $("[name='disabled']")
+			disabledArr.eq(0).prop("checked", false);
+			disabledArr.eq(1).prop("checked", true);
+		} else {
+			$("#myModalLabel").html("编辑菜单")
+			$("#parentName").val(selectedNode.parentName);
+			$("#name").val(selectedNode.name);
+			$("#ico").val(selectedNode.ico);
+			$("#action").val(selectedNode.action);
+			$("#explain").val(selectedNode.explain);
+			var validityArr = $("[name='validity']")
+			for (var i = 0; i < validityArr.length; i++) {
+				if (validityArr.eq(i).val() == (selectedNode.validity ? '1' : '0')) {
+					validityArr.eq(i).prop("checked", true);
+				}
+			}
+
+			var disabledArr = $("[name='disabled']")
+			for (var i = 0; i < disabledArr.length; i++) {
+				if (disabledArr.eq(i).val() == (selectedNode.disabled ? '1' : '0')) {
+					disabledArr.eq(i).prop("checked", true);
+				}
+			}
+
+		}
+	}
+
+	function addMenu() {
+		console.log("disabled=" + $("[name='disabled']").eq(0).prop("checked"))
+		console.log("validity= " + $("[name='validity']").eq(0).prop("checked"))
+		var param = {
+			name: $("#name").val(),
+			ico: $("#ico").val(),
+			action: $("#action").val(),
+			explain: $("#explain").val(),
+			parentId: selectedNode == undefined ? "" : selectedNode.id,
+			disabled: $("[name='disabled']").eq(0).prop("checked"),
+			validity: $("[name='validity']").eq(0).prop("checked")
+		}
+
+
+		$.ajax({
+			url: "/menu/create",
+			type: "POST",
+			data: param,
+			dataType: "json",
+			success: function (data) {
+				console.log(data)
+				if (data.code = "1") {
+					$("#createUp").modal('hide');
+
+					refreshMenu();
+				} else {
+					alert(data.msg)
+				}
+			}
+		});
+	}
+
+	// 删除菜单时的询问
+	function confirmDelete() {
+		$("#confirm").modal('show');
+	}
+
+	function deleteMenu() {
+		if (selectedNode == undefined) {
+			alert("请选择要删除的菜单。")
+			return;
+		}
+		$.ajax({
+			url: "/menu/delete/" + selectedNode.id,
+			type: "POST",
+			dataType: "json",
+			success: function (data) {
+				console.log(data)
+				if (data.code = "1") {
+					$("#confirm").modal('hide');
+					refreshMenu();
+				} else {
+					alert(data.msg)
+				}
+			}
+		});
+	}
+
+
+</script>
+

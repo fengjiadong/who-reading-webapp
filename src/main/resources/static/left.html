@@ -26,77 +26,22 @@
 					emptyIcon:"glyphicon glyphicon-asterisk",
 					onNodeSelected : function(event, node) {
 						// document.getElementById(node.seq).scrollIntoView();
-						console.log('onNodeSelected')
+						console.log('onNodeSelected:')
+						// console.log(event)
+						// console.log(node)
+						// $("#myFrameName", parent.document).attr('src', node.action);
+						parent.getMenu(node.id)
 					},
 					onNodeUnselected:function (event, node) {
 						console.log('onNodeUnselected')
-						// var anh = $('#top').offset().top;
-						// debugger
-						// $("#content").stop().animate({scrollTop:anh},400);
 					}
 				});
 			}
 		})
 
 	})
-	// var tree = [
-	// 	{
-	// 		name: "Parent 1",
-	// 		selectable:false,
-	// 		state:{
-	// 			expanded:false
-	// 		},
-	// 		// icon: "glyphicon glyphicon-stop",
-	// 		selectedIcon: "glyphicon glyphicon-stop",
-	// 		href: "javascript:checked()",
-	// 		nodes: [
-	// 			{
-	// 				name: "Child 1",
-	// 				selectable:false,
-	// 				nodes: [
-	// 					{
-	// 						name: "Grandchild 1"
-	// 					},
-	// 					{
-	// 						name: "Grandchild 2"
-	// 					}
-	// 				]
-	// 			},
-	// 			{
-	// 				name: "Child 2"
-	// 			}
-	// 		]
-	// 	},
-	// 	{
-	// 		name: "Parent 2",
-	//
-	// 		state:{
-	// 			// checked:true
-	// 			// expanded:false
-	// 			// selected:true
-	// 			disabled:true,
-	// 		},
-	// 	},
-	// 	{
-	// 		name: "Parent 3"
-	// 	},
-	// 	{
-	// 		name: "Parent 4"
-	// 	},
-	// 	{
-	// 		name: "Parent 5"
-	// 	}
-	// ];
-	//
-
-	function checked() {
-		console.log("选中")
-	}
-
-	function getMenu() {
 
 
-	}
 
 </script>
 

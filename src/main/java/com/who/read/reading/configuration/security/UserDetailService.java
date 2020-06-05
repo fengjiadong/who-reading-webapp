@@ -3,7 +3,6 @@ package com.who.read.reading.configuration.security;
 import com.who.read.reading.entity.Role;
 import com.who.read.reading.entity.User;
 import com.who.read.reading.service.UserService;
-import com.who.read.reading.utils.Options;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.core.GrantedAuthority;
@@ -43,10 +42,8 @@ public class UserDetailService implements UserDetailsService {
 		}
 		List<GrantedAuthority> admin = AuthorityUtils.commaSeparatedStringToAuthorityList(roleGranted.toString());
 		// 从数据库取值登录
-		MyUser user = new MyUser(username, passwordEncoder.encode(user1.getPassword()), admin);
+		MyUser user = new MyUser(username, user1.getPassword(), admin);
 		user.setUser(user1);
-		System.out.println("password : " + passwordEncoder.encode(user1.getPassword()));
-		System.out.println("password : " + user.getPassword());
 		return user;
 	}
 }

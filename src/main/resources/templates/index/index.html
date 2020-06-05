@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <html xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
 	<meta charset="UTF-8">
@@ -13,6 +14,7 @@
 	<!-- 加载 Bootstrap 的所有 JavaScript 插件。你也可以根据需要只加载单个插件。 -->
 	<script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
 	<script src="/js/bootstrap-treeview.js"></script>
+	<script src="/js/bootstrap-tab.js"></script>
 </head>
 <body>
 
@@ -24,25 +26,47 @@
 <!--尾部-->
 <!--头部-->
 <style>
-	html{
-		height: 100%;
-	}
 	body {
 		padding-top: 50px;
 	}
 
 	.embed-responsive-16by9 {
 		border: 1px #DDDDDD solid;
-		padding-bottom: 100%;
+		height: 0px;
+		padding-bottom: 0%;
 	}
-	.clarePd{
+
+	.clarePd {
 		padding: 0px;
 	}
-	.container-fluid{
-		height: 100%;
-	}
-</style>
 
+	.right-a{
+		padding-left: 13px;
+	}
+	.tab-v{
+		/*border: 1px red solid;*/
+	}
+
+</style>
+<script>
+
+	window.onload = function () {
+		changeDivHeight();
+	}
+	//当浏览器窗口大小改变时，设置显示内容的高度
+	window.onresize = function () {
+		changeDivHeight();
+
+	}
+
+	function changeDivHeight() {
+		var h = document.documentElement.clientHeight;//可见区域高度
+		var ss = document.getElementsByClassName("embed-responsive-16by9")
+		ss.item(0).style.height = (h - 100) + "px";
+		ss.item(1).style.height = (h - 130) + "px";
+		console.log("页面可见高度" + h)
+	}
+</script>
 <nav class="navbar navbar-default navbar-fixed-top">
 	<div class="container-fluid">
 		<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
@@ -59,9 +83,7 @@
 					<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
 					   aria-expanded="false"><span id="userName"></span> <span class="caret"></span></a>
 					<ul class="dropdown-menu">
-						<li><a href="#">个人中心</a></li>
-						<li><a href="#">动态建模</a></li>
-						<li><a href="#">浏览记录</a></li>
+						<li th:each="menu : ${session.systemMenu}"><a th:href="'#'+${menu.id}" th:text="${menu.name}"></a></li>
 						<li role="separator" class="divider"></li>
 						<li><a href="javascript:logoutShow()">退出登录</a></li>
 					</ul>
@@ -71,25 +93,38 @@
 		</div>
 	</div>
 </nav>
-<div class="row">
-	<div class="col-lg-3 clarePd">
-		<div class="embed-responsive embed-responsive-16by9">
-			<iframe class="embed-responsive-item" src="/left.html" scrolling="no"></iframe>
+<div class="container-fluid">
+	<div class="row">
+		<!--menu-->
+		<div class="col-lg-2 clarePd">
+			<div class="embed-responsive embed-responsive-16by9">
+				<iframe class="embed-responsive-item" src="/left.html" scrolling="no"></iframe>
+			</div>
+		</div>
+		<!--右侧-->
+		<div class="col-lg-10 right-a clarePd">
+			<!--tab-->
+			<div class="row">
+				<ul class="nav nav-tabs tab-v col-lg-12 col-md-12 col-sm-12" role="tablist">
+				</ul>
+			</div>
+			<div class="row">
+				<div class="embed-responsive embed-responsive-16by9  col-lg-12 col-md-12 col-sm-12" id="right">
+					<!--<iframe class='embed-responsive-item' id="myFrameName" src="http://www.baidu.com"-->
+							<!--scrolling="no"></iframe>-->
+					<div class="tab-content" style="width:100%;">
+					</div>
+				</div>
+			</div>
 		</div>
 	</div>
-	<div class="col-lg-9 clarePd">
-		<div class="embed-responsive embed-responsive-16by9">
-			<iframe class="embed-responsive-item" src="/myInfo.html" scrolling="no"></iframe>
+	<br>
+	<div class="row bottom ">
+		<div class=" col-lg-12 ">
+			<p class="text-center">备案号：沪A3307SSOC @187</p>
 		</div>
 	</div>
 </div>
-<br>
-<div class="row bottom ">
-	<div class=" col-lg-12 ">
-		<p class="text-center">备案号：沪A3307SSOC @187</p>
-	</div>
-</div>
-
 
 <!-- 模态框（Modal） 拥有确定和取消按钮-->
 <div class="modal fade bs-example-modal-sm" id="myModal1" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
@@ -111,8 +146,25 @@
 <!-- /.modal -->
 </body>
 <script>
+	var tabIndex = 0;
 	$(function () {
+		var index = location.href.indexOf('#');
+		var href = location.href.substring(index + 1);
+		console.log("href="+href)
+		console.log("location.href.indexOf('#')="+location.href.indexOf('#'))
+		if(index != -1){
+			getMenu(href)
+		}else{
+			var item = {'id':tabIndex,'name':'首页','url':"/hello.html",'closable':true};
+			closableTab.addTab(item);
+		}
 		$("#userName").html(sessionStorage.getItem("name"))
+
+		// 监听url变化
+		$(window).bind('hashchange', function () {
+			var id = location.href.substring(location.href.indexOf('#') + 1)
+			getMenu(id)
+		})
 	});
 
 	function logoutShow() {
@@ -127,7 +179,21 @@
 			dataType: "json",
 			success: function (data) {
 				console.log("退出")
-				window.location.href = "/login";
+				window.location.href = "/login.html";
+			}
+		})
+	}
+
+	function getMenu(id) {
+		$.ajax({
+			url: "/menu/getMenu/"+id,
+			type: "POST",
+			dataType: "json",
+			success: function (data) {
+				console.log(data)
+				window.location.href = "#"+data.id
+				var item = {'id':id,'name':data.name,'url':data.action,'closable':true};
+				closableTab.addTab(item);
 			}
 		})
 

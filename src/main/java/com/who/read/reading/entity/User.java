@@ -23,6 +23,18 @@ public class User {
 
 	private List<Role> roles;
 
+	public Boolean hasRole(String roleId) {
+		if (this.roles == null || this.roles.isEmpty() || roleId == null || "".equals(roleId.trim())) {
+			return false;
+		}
+		for (Role role : this.roles) {
+			if (role.getId().equals(roleId)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	public List<Role> getRoles() {
 		return roles;
 	}

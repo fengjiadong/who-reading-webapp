@@ -2,6 +2,9 @@ package com.who.read.reading.configuration;
 
 import org.json.JSONObject;
 
+import java.util.HashMap;
+import java.util.Map;
+
 
 /**
  * @Classname ServiceUtils
@@ -21,5 +24,16 @@ public class ServiceUtils {
 		results.put("result", result);
 		return results;
 	}
-
+	/**
+	 * 统一返回格式
+	 *
+	 * @return
+	 */
+	public static Map<String,Object> returnMapRestlt(String code, String msg, Object result) {
+		Map<String, Object> results = new HashMap<>();
+		results.put("code", code);
+		results.put("msg", msg);
+		results.put("result", result);
+		return results;
+	}
 }

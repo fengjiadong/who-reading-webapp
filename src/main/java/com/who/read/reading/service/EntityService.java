@@ -24,18 +24,23 @@ public class EntityService {
 	@Autowired
 	EntityMapper entityMapper;
 
+	public Integer create(String sql) {
+		return entityMapper.create(sql);
+	}
+
 	public List<Entity> list(EntityCondition entityCondition) {
 		List<Entity> entityList = new ArrayList<>();
 		List<Map<String, Object>> list = entityMapper.list(entityCondition.getSql());
 
 		for (int i = 0; i < list.size(); i++) {
-			Entity entity = new Entity(list.get(i).get("id").toString());
+			Entity entity = new Entity(entityCondition.getTypeId());
+			entity.setId(list.get(i).get("id").toString());
 			Map<String, Object> paoperties = list.get(i);
 			entity.setProperties(paoperties);
 			// 寻找显示值--start
 			//fieldDisplay
 			HashMap<String, Object> displayMap = new HashMap<>(paoperties);
-			String fieldSql = "select * from field where parentId = '" + entityCondition.getTypeId() + "'";
+			String fieldSql = "select * from `dm.field` where parentId = '" + entityCondition.getTypeId() + "'";
 			List<Map<String, Object>> fieldList = entityMapper.list(fieldSql);
 			for (Map<String, Object> fieldMap : fieldList) {
 				String fieldName = fieldMap.get("field").toString();
@@ -63,7 +68,7 @@ public class EntityService {
 			Object o = entityMapper.fieldDisplay(sql);
 			return o;
 		} else if ("option".equals(type.toString())) {
-			String sql = "select name from `option` where id= '" + value + "'";
+			String sql = "select name from `dm.option` where id= '" + value + "'";
 			Object o = entityMapper.fieldDisplay(sql);
 			return o;
 		}

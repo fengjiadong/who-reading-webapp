@@ -17,19 +17,22 @@ import java.util.Map;
 @Repository
 public interface RoleMapper {
 
-	@Select("select * from role ")
+	@Select("select * from `dm.role` ")
 	List<Role> allRole();
 
-	@Select("select * from role where id = #{id}  ")
+	@Select("select * from `dm.role` where id = #{id}  ")
 	Menu getMenuById(@Param(value = "id") String id);
 
-	@Select("select * from role where name = #{name}  ")
+	@Select("select * from `dm.role` where name = #{name}  ")
 	List<Role>  getRoleByName(@Param(value = "name") String name);
 
-	@Select("select * FROM role WHERE id in (select roleId from user_role where parentId = #{userId})  ")
+	@Select("select * FROM `dm.role` WHERE id in (select roleId from `dm.user_role` where parentId = #{userId})  ")
 	List<Role>  getUserRole(@Param(value = "userId") String userId);
 
-	@Select("select * from menu_role where parentId = #{userId}  ")
-	List<Map<String,Object>>  getMenuRole(@Param(value = "userId") String userId);
+//	@Select("select * from `dm.menu_role` where parentId = #{userId} ")
+//	List<Map<String,Object>>  getMenuRole(@Param(value = "userId") String userId);
+
+	@Select("SELECT * FROM `dm.role` as r WHERE r.id in (select roleId FROM `dm.menu_role` where parentId = #{menuId})")
+	List<Role> getMenuRole(@Param(value = "menuId") String menuId);
 
 }

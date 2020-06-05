@@ -19,11 +19,11 @@ public class ErrorConfigurar implements ErrorPageRegistrar {
 
 	@Override
 	public void registerErrorPages(ErrorPageRegistry registry) {
-		ErrorPage[] errorPages = new ErrorPage[2];
+		ErrorPage[] errorPages = new ErrorPage[4];
 		errorPages[0] = new ErrorPage(HttpStatus.NOT_FOUND, "/404.html");
-		errorPages[0] = new ErrorPage(HttpStatus.BAD_REQUEST, "/error.html?code=400");
-		errorPages[1] = new ErrorPage(HttpStatus.INTERNAL_SERVER_ERROR, "/error.html?code=500");
-		errorPages[1] = new ErrorPage(HttpStatus.FORBIDDEN, "/403.html?code=403");
+		errorPages[1] = new ErrorPage(HttpStatus.BAD_REQUEST, "/error.html?code=400");
+		errorPages[2] = new ErrorPage(HttpStatus.INTERNAL_SERVER_ERROR, "/error.html?code=500");
+		errorPages[3] = new ErrorPage(HttpStatus.FORBIDDEN, "/403.html?code=403");
 		LOGGER.error("访问错误.");
 		registry.addErrorPages(errorPages);
 	}

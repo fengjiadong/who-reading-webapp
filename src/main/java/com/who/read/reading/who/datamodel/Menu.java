@@ -10,26 +10,71 @@ import java.util.Map;
  * @Created by fengjiadong
  */
 public class Menu {
+	private Menu parent;
 	private String id;
 	private String name;
 	private String parentId;
+	private String parentName;
 	private String ico;
 	private String code;
 	private String action;
 	private boolean selectable;
 	private boolean disabled;
 	private String count;
+	private Integer order;
+	private String site;
+	private String explain;
 	private boolean validity;
 	private Map<String, Object> state;
 
 	public Map<String, Object> getState() {
-		if(state==null){
+		if (state == null) {
 			state = new HashMap<>();
 			state.put("expanded", false);
 			state.put("selected", false);
 			state.put("disabled", disabled);
 		}
 		return state;
+	}
+
+	public String getParentName() {
+		return parentName;
+	}
+
+	public void setParentName(String parentName) {
+		this.parentName = parentName;
+	}
+
+	public Menu getParent() {
+		return parent;
+	}
+
+	public void setParent(Menu parent) {
+		this.parent = parent;
+	}
+
+	public String getExplain() {
+		return explain;
+	}
+
+	public void setExplain(String explain) {
+		this.explain = explain;
+	}
+
+	public Integer getOrder() {
+		return order;
+	}
+
+	public void setOrder(Integer order) {
+		this.order = order;
+	}
+
+	public String getSite() {
+		return site;
+	}
+
+	public void setSite(String site) {
+		this.site = site;
 	}
 
 	public void setState(Map<String, Object> state) {
