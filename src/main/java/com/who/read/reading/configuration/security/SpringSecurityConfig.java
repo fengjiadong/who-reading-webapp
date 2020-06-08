@@ -1,5 +1,6 @@
 package com.who.read.reading.configuration.security;
 
+import com.who.read.reading.utils.Options;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -43,7 +44,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 				.and()
 				.authorizeRequests()            // 授权配置
 				.antMatchers("/login", "/login.html", "/api/login", "/api/logged", "/authentication/require", "/css/**", "/js/**").permitAll()  // 无需认证
-//				.antMatchers("/index.html").hasAnyRole(Options.Role_Admin)
+//				.antMatchers("/index.html").hasRole(Options.Role_Admin)
 				.anyRequest()                   // 所有请求
 				.authenticated().and()
 				.logout()

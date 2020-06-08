@@ -15,7 +15,7 @@ public class Menu {
 	private String name;
 	private String parentId;
 	private String parentName;
-	private String ico;
+	private String icon;
 	private String code;
 	private String action;
 	private boolean selectable;
@@ -109,12 +109,12 @@ public class Menu {
 		this.parentId = parentId;
 	}
 
-	public String getIco() {
-		return ico;
+	public String getIcon() {
+		return icon;
 	}
 
-	public void setIco(String ico) {
-		this.ico = ico;
+	public void setIcon(String icon) {
+		this.icon = icon;
 	}
 
 	public String getCode() {

@@ -2,7 +2,7 @@
 <html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
 	<meta charset="UTF-8">
-	<title>Title</title>
+	<title>用户管理</title>
 	<link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
 	<!-- jQuery (Bootstrap 的所有 JavaScript 插件都依赖 jQuery，所以必须放在前边) -->
 	<script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
@@ -15,15 +15,15 @@
 		<br>
 		<div class="row">
 			<div class="col-lg-2 col-sm-12 col-md-3">
-				<input type="text" name="name" class="form-control" placeholder="用户名/手机号/ID">
-				<input type="hidden" id="pageNo" name="pageNo"  th:value="${session.pageNo}">
-				<input type="hidden" id="pageSize" name="pageSize" th:value="${session.pageSize}">
+				<input type="text" th:value="${name}" name="name" class="form-control" placeholder="用户名/手机号/ID">
+				<input type="hidden" id="pageNo" name="pageNo"  th:value="${pageNo}">
+				<input type="hidden" id="pageSize" name="pageSize" th:value="${pageSize}">
 			</div>
 			<div class="col-lg-2 col-sm-12 col-md-4">
 				<input type="submit" value="查询" class="btn btn-default">
 			</div>
 		</div>
-
+		<br>
 		<table class="table table-hover">
 			<tr>
 				<th>姓名</th>
@@ -32,10 +32,10 @@
 				<th>手机号</th>
 				<th>角色</th>
 			</tr>
-			<tr th:if="${session.userSize} == 0">
+			<tr th:if="${userSize} == 0">
 				<td colspan="5" class="text-center">暂无数据</td>
 			</tr>
-			<tr class="" th:each="user : ${session.users}">
+			<tr class="" th:each="user : ${users}">
 				<td><p th:text="${user.name}"></p></td>
 				<td><p th:text="${user.gender}"></p></td>
 				<td><p th:text="${user.age}"></p></td>
@@ -44,35 +44,32 @@
 					<span th:each="role : ${user.roles}" th:text="${role.name}+'、'"></span>
 				</td>
 			</tr>
-			<tr>
-				<!--<td class="text-center" colspan="3"  th:text="''+${session.count}+' 当前第：'+${session.pageNo}+'页'"></td>-->
-			</tr>
 		</table>
 		<hr>
 		<div class="row">
 			<div class="col-lg-4 col-md-4">
-				<p th:text="'共'+${session.pageCount}+'页'+${session.count}+'条'"></p>
-				<p th:text="'当前页显示：'+${session.userSize}+'条'"></p>
+				<p th:text="'共'+${pageCount}+'页'+${count}+'条'"></p>
+				<p th:text="'当前页显示：'+${userSize}+'条'"></p>
 			</div>
 
-			<div class="col-md-4 col-sm-offset-0 col-md-offset-4">
+			<div th:if="${pageCount} gt 1"  class="col-md-4 col-sm-offset-0 col-md-offset-4">
 				<!--分页控件，可复用-->
 				<nav aria-label="Page navigation ">
 					<ul class="pagination">
-						<li th:if="${session.pageNo} gt 1" id="prev">
+						<li th:if="${pageNo} gt 1" id="prev">
 							<a href="#" aria-label="Previous">
 								<span aria-hidden="true">&laquo;</span>
 							</a>
 						</li>
-						<li name="page" th:if="${session.pageNo} > 4"><a href="#" value="1" >1</a></li>
-						<li th:if="${session.pageNo} > 5"><a >....</a></li>
+						<li name="page" th:if="${pageNo} > 4"><a href="#" value="1" >1</a></li>
+						<li th:if="${pageNo} > 5"><a >....</a></li>
 
-						<li name="page" th:each ="num : ${session.pageArr}" th:classappend="${session.pageNo} == ${num}?'active':''"><a href="#"  th:value="${num}" th:text="${num}" ></a></li>
+						<li name="page" th:each ="num : ${pageArr}" th:classappend="${pageNo} == ${num}?'active':''"><a href="#"  th:value="${num}" th:text="${num}" ></a></li>
 
-						<li th:if="${session.pageNo} < ${session.pageCount}-3"><a >....</a></li>
-						<li name="page" th:if="${session.pageNo} < ${session.pageCount}-2"><a href="#" th:value="${session.pageCount}" th:text="${session.pageCount}"></a></li>
+						<li th:if="${pageNo} < ${pageCount}-3"><a >....</a></li>
+						<li name="page" th:if="${pageNo} < ${pageCount}-2"><a href="#" th:value="${pageCount}" th:text="${pageCount}"></a></li>
 
-						<li th:if="${session.pageNo} lt ${session.pageCount}" id="next" >
+						<li th:if="${pageNo} lt ${pageCount}" id="next" >
 							<a href="#" aria-label="Next">
 								<span aria-hidden="true">&raquo;</span>
 							</a>

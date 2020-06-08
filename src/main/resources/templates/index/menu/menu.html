@@ -30,7 +30,7 @@
 					<span id="nameShow"></span>
 				</h6>
 				<hr>
-				<h6>ico：
+				<h6>icon：
 					<span id="icoShow"></span>
 				</h6>
 				<hr>
@@ -59,6 +59,10 @@
 				<!--</h6>-->
 				<h6>备注：
 					<span id="explainShow"></span>
+				</h6>
+				<hr>
+				<h6>可见角色：
+					<span id="rolesShow"></span>
 				</h6>
 				<hr>
 				<input type="button" class="btn btn-default" value="编辑" onclick="createUpShow('update')">
@@ -105,9 +109,9 @@
 								</div>
 							</div>
 							<div class="form-group">
-								<label for="ico" class="col-sm-2 control-label">ico</label>
+								<label for="icon" class="col-sm-2 control-label">icon</label>
 								<div class="col-sm-8">
-									<input id="ico" type="text" class="form-control" placeholder="请输入图标">
+									<input id="icon" type="text" class="form-control" placeholder="请输入图标">
 								</div>
 							</div>
 							<div class="form-group">
@@ -116,7 +120,12 @@
 									<input id="action" type="text" class="form-control" placeholder="请输入动作">
 								</div>
 							</div>
-
+							<div class="form-group">
+								<label for="action" class="col-sm-2 control-label">分组</label>
+								<div class="col-sm-8">
+									<input id="site" type="text" class="form-control" placeholder="请输入分组信息">
+								</div>
+							</div>
 							<div class="form-group">
 								<label class="col-sm-2 control-label">是否显示</label>
 								<div class="col-sm-8">
@@ -153,41 +162,28 @@
 					</div>
 					<!--角色信息-->
 					<div role="tabpanel" class="tab-pane " id="roleInfo">
-							<div class="form-group">
-								<div class="col-sm-8 col-sm-offset-1">
-									<select class="form-control">
-										<option>超级管理员</option>
-										<option>员工</option>
-										<option>开发者</option>
-										<option>部门经理</option>
-										<option>部门副经理</option>
-									</select>
-								</div>
-								<div class="col-sm-3">
-									<input type="button" class="btn btn-default" value="添加">
-								</div>
+						<div class="form-group">
+							<div class="col-sm-8 col-sm-offset-1">
+								<select class="form-control" id="addRole">
+									<!--<option>超级管理员</option>-->
+
+								</select>
 							</div>
+							<div class="col-sm-3">
+								<input type="button" class="btn btn-default" onclick="addRole()" value="添加">
+							</div>
+						</div>
 						<br>
 						<br>
 						<br>
 						<div class="row">
 							<div class="col-sm-10 col-sm-offset-1">
-								<table class="table table-condensed">
-									<tr>
-										<td>超级管理员</td>
-										<td>Admin</td>
-										<td><input type="button" class="btn btn-default" value="移除"></td>
-									</tr>
-									<tr>
-										<td>员工</td>
-										<td>Staff</td>
-										<td><input type="button" class="btn btn-default" value="移除"></td>
-									</tr>
-									<tr>
-										<td>开发者</td>
-										<td>develop</td>
-										<td><input type="button" class="btn btn-default" value="移除"></td>
-									</tr>
+								<table class="table table-condensed" id="roles">
+									<!--<tr>-->
+									<!--<td>超级管理员</td>-->
+									<!--<td>Admin</td>-->
+									<!--<td><input type="button" class="btn btn-default" value="移除"></td>-->
+									<!--</tr>-->
 								</table>
 							</div>
 						</div>
@@ -197,7 +193,8 @@
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
-				<button type="button" class="btn btn-primary" onclick="addMenu()">保存</button>
+				<button type="button" class="btn btn-primary" id="addMenu" onclick="addMenu()">保存</button>
+				<button type="button" class="btn btn-primary" id="saveMenu" onclick="saveMenu()">保存</button>
 			</div>
 		</div><!-- /.modal-content -->
 	</div><!-- /.modal-dialog -->
@@ -212,7 +209,7 @@
 				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
 				<p class="modal-title" id="confirmShow">操作提醒</p>
 			</div>
-			<div class="modal-body">确定要删除吗？</div>
+			<div class="modal-body">确定要移除吗？</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
 				<button type="button" class="btn btn-primary" onclick="deleteMenu()">确定</button>
@@ -233,9 +230,10 @@
 	var tree = [{name: "1"}];
 	var selectedNode = undefined;
 	$(function () {
-		refreshMenu()
+		refreshMenu();
+		allRole();
 	})
-
+	// 刷新菜单
 	function refreshMenu() {
 		selectedNode = undefined;
 		$("#show").hide()
@@ -251,23 +249,51 @@
 					color: "#428bca",
 					enableLinks: false,
 					data: tree,
-					emptyIcon: "glyphicon glyphicon-asterisk",
+					nodeIcon:"glyphicon-asterisk",
 					onNodeSelected: function (event, node) {
-						console.log('onNodeSelected:')
-						console.log(event)
-						console.log(node)
-						selectedNode = node;
-						$("#nameShow").html(node.name)
-						$("#actionShow").html(node.action)
-						$("#codeShow").html(node.code)
-						$("#disabledShow").html(node.disabled ? "是" : "否")
-						$("#validityShow").html(node.validity ? "是" : "否")
-						$("#siteShow").html(node.site)
+						// 从数据库获取菜单数据，因为控件里面的菜单数据是经过修改的。
+						$.ajax({
+							url: "/menu/getMenu/" + node.id,
+							type: "POST",
+							dataType: "json",
+							success: function (data) {
+								console.log(data)
+								if(data.code = '1'){
+									selectedNode = data.result
+									$("#nameShow").html(selectedNode.name)
+									$("#actionShow").html(selectedNode.action)
+									$("#codeShow").html(selectedNode.code)
+									$("#disabledShow").html(selectedNode.disabled ? "是" : "否")
+									$("#validityShow").html(selectedNode.validity ? "是" : "否")
+									$("#siteShow").html(selectedNode.site)
+									$("#explainShow").html(selectedNode.explain)
+									$("#icoShow").html(selectedNode.icon)
+									$("#parentNameShow").html(node.parentName ? node.parentName : "无")
+									$("#show").show()
+								}else{
+									alert("菜单未找到。")
+									selectedNode = undefined;
+								}
+							}
+						})
+
 						// $("#orderShow").html(node.order)
-						$("#explainShow").html(node.explain)
-						$("#icoShow").html(node.ico)
-						$("#parentNameShow").html(node.parentName ? node.parentName : "无")
-						$("#show").show()
+						// 找到菜单的可见角色
+						$.ajax({
+							url: "/menu/role/" + node.id,
+							type: "POST",
+							dataType: "json",
+							success: function (data) {
+								var roles = data.result;
+								var rolesShow = '';
+								for (var i = 0; i < roles.length; i++) {
+									rolesShow += roles[i].name+roles[i].displayName + '、'
+								}
+								$("#rolesShow").html(rolesShow)
+							}
+						})
+
+
 					},
 					onNodeUnselected: function (event, node) {
 						selectedNode = undefined;
@@ -278,17 +304,25 @@
 			}
 		})
 	}
+	function refreshSingleMenu(){
 
+	}
+
+	// 显示新增或修改菜单的窗口
 	function createUpShow(type) {
 		$("#createUp").modal('show');
+		$("#saveMenu").hide()
+		$("#addMenu").hide()
 		if (type == 'add') {
 			$("#myModalLabel").html("新增菜单")
+			$("#addMenu").show(100)
 			$("#parentName").val(selectedNode == undefined ? "无" : selectedNode.name);
 			// 清空上次显示的情况
 			$("#name").val("");
-			$("#ico").val("");
+			$("#icon").val("");
 			$("#action").val("");
 			$("#explain").val("");
+			$("#site").val("");
 			var validityArr = $("[name='validity']")
 			validityArr.eq(0).prop("checked", true);
 			validityArr.eq(1).prop("checked", false);
@@ -298,11 +332,13 @@
 			disabledArr.eq(1).prop("checked", true);
 		} else {
 			$("#myModalLabel").html("编辑菜单")
+			$("#saveMenu").show(100)
 			$("#parentName").val(selectedNode.parentName);
 			$("#name").val(selectedNode.name);
-			$("#ico").val(selectedNode.ico);
+			$("#icon").val(selectedNode.icon);
 			$("#action").val(selectedNode.action);
 			$("#explain").val(selectedNode.explain);
+			$("#site").val(selectedNode.site);
 			var validityArr = $("[name='validity']")
 			for (var i = 0; i < validityArr.length; i++) {
 				if (validityArr.eq(i).val() == (selectedNode.validity ? '1' : '0')) {
@@ -316,23 +352,52 @@
 					disabledArr.eq(i).prop("checked", true);
 				}
 			}
-
+			getRolesByMenuId();
 		}
 	}
+	// 修改菜单保存
+	function saveMenu() {
+		var param = {
+			id: selectedNode == undefined ? "" : selectedNode.id,
+			name: $("#name").val(),
+			icon: $("#icon").val(),
+			action: $("#action").val(),
+			explain: $("#explain").val(),
+			// parentId: selectedNode == undefined ? "" : selectedNode.id,
+			disabled: $("[name='disabled']").eq(0).prop("checked"),
+			validity: $("[name='validity']").eq(0).prop("checked"),
+			site: $("#site").val()
+		}
+		// glyphicon-euro
+		$.ajax({
+			url: "/menu/update",
+			type: "POST",
+			data: param,
+			dataType: "json",
+			success: function (data) {
+				alert(data.msg)
+				if (data.code = "1") {
+					$("#createUp").modal('hide');
+					refreshMenu();
+				}
+			}
+		});
+	}
 
+	// 添加一个菜单
 	function addMenu() {
-		console.log("disabled=" + $("[name='disabled']").eq(0).prop("checked"))
-		console.log("validity= " + $("[name='validity']").eq(0).prop("checked"))
+		// console.log("disabled=" + $("[name='disabled']").eq(0).prop("checked"))
+		// console.log("validity= " + $("[name='validity']").eq(0).prop("checked"))
 		var param = {
 			name: $("#name").val(),
-			ico: $("#ico").val(),
+			icon: $("#icon").val(),
 			action: $("#action").val(),
 			explain: $("#explain").val(),
 			parentId: selectedNode == undefined ? "" : selectedNode.id,
 			disabled: $("[name='disabled']").eq(0).prop("checked"),
-			validity: $("[name='validity']").eq(0).prop("checked")
+			validity: $("[name='validity']").eq(0).prop("checked"),
+			site: $("#site").val()
 		}
-
 
 		$.ajax({
 			url: "/menu/create",
@@ -341,12 +406,10 @@
 			dataType: "json",
 			success: function (data) {
 				console.log(data)
+				alert(data.msg)
 				if (data.code = "1") {
 					$("#createUp").modal('hide');
-
 					refreshMenu();
-				} else {
-					alert(data.msg)
 				}
 			}
 		});
@@ -357,6 +420,28 @@
 		$("#confirm").modal('show');
 	}
 
+	// 移除菜单中的角色
+	function removeRoleShow(roleId) {
+		var isRemove = confirm("确定要移除该角色吗？")
+		if (isRemove) {
+
+			var param = {
+				menuId:selectedNode.id,
+				roleId:roleId
+			}
+			$.ajax({
+				url: "/menu/menuRemoveRole",
+				type: "POST",
+				data: param,
+				dataType: "json",
+				success: function (data) {
+					console.log(data)
+					getRolesByMenuId()
+				}
+			});
+		}
+	}
+	// 删除菜单
 	function deleteMenu() {
 		if (selectedNode == undefined) {
 			alert("请选择要删除的菜单。")
@@ -378,6 +463,64 @@
 		});
 	}
 
+	// 根据菜单得到菜单可见的角色
+	function getRolesByMenuId() {
+		// roles
+		if (selectedNode == undefined) {
+			alert("请选择要删除的菜单。")
+			return;
+		}
+		$.ajax({
+			url: "/menu/role/" + selectedNode.id,
+			type: "POST",
+			dataType: "json",
+			success: function (data) {
+				console.log(data)
+				$("#roles").html('');
+				if (data.code = "1") {
+					var roles = data.result;
+					for (var i = 0; i < roles.length; i++) {
+						$("#roles").append("<tr><td>" + roles[i].name + "</td><td>" + roles[i].displayName + "</td><td><input type='button' class='btn btn-default' value='移除' onclick=\"removeRoleShow('" + roles[i].id + "')\"></td></tr>")
+					}
+				} else {
+					alert(data.msg)
+				}
+			}
+		});
+	}
+
+	// 页面加载时获取所有的角色
+	function allRole() {
+		$.ajax({
+			url: "/role/allRole",
+			type: "POST",
+			dataType: "json",
+			success: function (data) {
+				console.log(data)
+				for (var i = 0; i < data.length; i++) {
+					// addRole
+					$("#addRole").append("<option value='"+data[i].id+"'>"+data[i].displayName+"</option>")
+				}
+			}
+		});
+	}
+	// 把角色添加到菜单中
+	function addRole() {
+		var param = {
+			menuId:selectedNode.id,
+			roleId:$("#addRole").val()
+		}
+		$.ajax({
+			url: "/menu/menuAddRole",
+			type: "POST",
+			data: param,
+			dataType: "json",
+			success: function (data) {
+				console.log(data)
+				getRolesByMenuId()
+			}
+		});
+	}
 
 </script>
 

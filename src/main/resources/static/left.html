@@ -23,12 +23,10 @@
 					color : "#428bca",
 					enableLinks: false,
 					data : tree,
-					emptyIcon:"glyphicon glyphicon-asterisk",
+					nodeIcon:"glyphicon glyphicon-asterisk",
 					onNodeSelected : function(event, node) {
-						// document.getElementById(node.seq).scrollIntoView();
+						console.log(node)
 						console.log('onNodeSelected:')
-						// console.log(event)
-						// console.log(node)
 						// $("#myFrameName", parent.document).attr('src', node.action);
 						parent.getMenu(node.id)
 					},

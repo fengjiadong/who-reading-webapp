@@ -12,21 +12,48 @@
 <body>
 	<div class="container">
 		<div class="row">
-			<div class="col-lg-3">
-				<p class="">姓名:</p>
+			<div class="col-md-1">
+
 			</div>
-			<div class="col-lg-3">
-				<p><span th:text="${session.user.name}"></span></p>
+			<div class="col-md-6  ">
+				<div class="row text-center">
+					<div class="col-xs-3 col-md-3">
+						<a  class="thumbnail">
+							<img  th:src="${session.user.img}" alt="">
+						</a>
+					</div>
+				</div>
+				<h6>姓名: <span th:text="${session.user.name}"></span></h6>
+				<hr>
+				<h6>性别: <span th:text="${session.user.gender}==1?'男':'女'"></span></h6>
+				<hr>
+				<h6>年龄: <span th:text="${session.user.age}+'岁'"></span></h6>
+				<hr>
+				<h6>手机号: <span th:text="${session.user.phone}"></span></h6>
+				<hr>
+				<h6>账号: <span th:text="${session.user.userName}"></span></h6>
+				<hr>
+				<h6>email: <span th:text="${session.user.email}"></span></h6>
+				<hr>
+				<h6>角色: <span class="" th:each="role : ${session.roles}" th:text="${role.name}+${role.displayName}+'、'"></span></h6>
+				<hr>
 			</div>
+
+			<!--<div class="col-lg-3">-->
+				<!--<p class="">姓名:</p>-->
+			<!--</div>-->
+			<!--<div class="col-lg-3">-->
+				<!--<p><span th:text="${session.user.name}"></span></p>-->
+			<!--</div>-->
 		</div>
-		<div class="row">
-			<div class="col-lg-3">
-				<p class="">权限:</p>
-			</div>
-			<div class="col-lg-3">
-				<p class="" th:each="role : ${session.roles}" th:text="${role.name}+${role.displayName}"></p>
-			</div>
-		</div>
+		<!--<div class="row">-->
+			<!--<div class="col-lg-3">-->
+				<!--<p class="">权限:</p>-->
+			<!--</div>-->
+			<!--<div class="col-lg-3">-->
+				<!--<p class="" th:each="role : ${session.roles}" th:text="${role.name}+${role.displayName}"></p>-->
+			<!--</div>-->
+		<!--</div>-->
 	</div>
 </body>
 </html>

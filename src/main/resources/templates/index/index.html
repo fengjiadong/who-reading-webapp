@@ -67,6 +67,7 @@
 		console.log("页面可见高度" + h)
 	}
 </script>
+<!--顶部导航栏-->
 <nav class="navbar navbar-default navbar-fixed-top">
 	<div class="container-fluid">
 		<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
@@ -76,10 +77,12 @@
 				</div> &nbsp;
 				<button type="submit" class="btn btn-default">搜索</button>
 			</form>
-			<ul class="nav navbar-nav navbar-right">
-				<!-- <li>我的</a></li> -->
+			<!--<p class="navbar-text navbar-left">Signed in as <a href="#" class="navbar-link">Mark Otto</a></p>-->
+			<p class="navbar-text navbar-left">Who 动态建模系统 </p>
 
-				<li *ngIf="isLogin" class="dropdown">
+			<ul class="nav navbar-nav navbar-right">
+				<!-- 我的菜单 -->
+				<li class="dropdown">
 					<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
 					   aria-expanded="false"><span id="userName"></span> <span class="caret"></span></a>
 					<ul class="dropdown-menu">
@@ -93,9 +96,10 @@
 		</div>
 	</div>
 </nav>
+<!--主体-->
 <div class="container-fluid">
 	<div class="row">
-		<!--menu-->
+		<!--左侧菜单栏 menu-->
 		<div class="col-lg-2 clarePd">
 			<div class="embed-responsive embed-responsive-16by9">
 				<iframe class="embed-responsive-item" src="/left.html" scrolling="no"></iframe>
@@ -121,7 +125,7 @@
 	<br>
 	<div class="row bottom ">
 		<div class=" col-lg-12 ">
-			<p class="text-center">备案号：沪A3307SSOC @187</p>
+			<h6 class="text-center"> 备案号：沪A3307SSOC@2020 - Who Dynamic modeling system</h6>
 		</div>
 	</div>
 </div>
@@ -191,9 +195,12 @@
 			dataType: "json",
 			success: function (data) {
 				console.log(data)
-				window.location.href = "#"+data.id
-				var item = {'id':id,'name':data.name,'url':data.action,'closable':true};
-				closableTab.addTab(item);
+				if(data.code == '1'){
+					window.location.href = "#"+data.result.id
+					var item = {'id':id,'name':data.result.name,'url':data.result.action,'closable':true};
+					closableTab.addTab(item);
+				}
+
 			}
 		})
 

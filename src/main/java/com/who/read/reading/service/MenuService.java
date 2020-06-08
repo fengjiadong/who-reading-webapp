@@ -25,21 +25,21 @@ public class MenuService {
 	@Autowired
 	private RoleMapper roleMapper;
 
-	public List<Menu> allMenu(){
+	public List<Menu> allMenu() {
 		String id = UserSessionFactory.currentUser().getId();
 		List<Menu> menus = menuMapper.allParentMenu(id);
-		// 判断是否有权限获取
 		for (Menu menu : menus) {
-			menu.setNodes(chidrens(menu,id));
+			menu.setNodes(chidrens(menu, id));
 		}
 		return menus;
 	}
 
 	/**
 	 * 菜单管理时查询使用本方法。
+	 *
 	 * @return
 	 */
-	public List<Menu> allMenuManager(){
+	public List<Menu> allMenuManager() {
 		List<Menu> menus = menuMapper.allManagerParentMenu();
 		for (Menu menu : menus) {
 			menu.setNodes(chidrensByManager(menu));
@@ -47,52 +47,136 @@ public class MenuService {
 		return menus;
 	}
 
+	public List<Menu> allMenuManager(Boolean isAdmin) {
+		List<Menu> menus = menuMapper.allManagerParentMenu();
+		for (Menu menu : menus) {
+			menu.setNodes(chidrensByAdmin(menu));
+		}
+		return menus;
+	}
+
 	public List<Menu> getMenuBySite(String site) {
 		return this.menuMapper.getMenuBySite(site);
 	}
+	public List<Menu> getMenuBySiteAndRole(String site,String userId) {
+		return this.menuMapper.getMenuBySiteAndRole(site,userId);
+	}
 
-	public Menu getMenuById(String id){
+	public Menu getMenuById(String id) {
 		return menuMapper.getMenuById(id);
 	}
 
-	public List<Menu>  getChildrensMenu( String parentId,String userId){
-		return menuMapper.getChildrensMenu(parentId,userId);
+	public List<Menu> getChildrensMenu(String parentId, String userId) {
+		return menuMapper.getChildrensMenu(parentId, userId);
 	}
 
-	public List<Menu>  getMenuByName( String name){
+	public List<Menu> getMenuByName(String name) {
 		return menuMapper.getMenuByName(name);
 	}
 
+	/**
+	 * 创建一个菜单
+	 *
+	 * @param menu
+	 * @return
+	 */
 	public Integer createMenu(Menu menu) {
-		if(menu.getId() == null || "".equals(menu.getId().trim())){
+		if (menu.getId() == null || "".equals(menu.getId().trim())) {
 			menu.setId(UUID.generateUUID());
 		}
 		return menuMapper.createMenu(menu);
 	}
 
-	public Integer deleteMenu(String id) {
-		return menuMapper.deleteMenu(id);
-	}
+
+	// updateMenu
+
 	/**
-	 * 递归查询所有下级菜单，并根据是否有父菜单来设置可点击。
+	 * 修改菜单
+	 *
 	 * @param menu
 	 * @return
 	 */
-	private List<Menu> chidrens(Menu menu,String userId) {
-		List<Menu> childrensMenus = menuMapper.getChildrensMenu(menu.getId(),userId);
-		if(childrensMenus ==null || childrensMenus.isEmpty()){
+	public Integer updateMenu(Menu menu) {
+		return menuMapper.updateMenu(menu);
+	}
+
+
+	/**
+	 * 删除某个菜单
+	 *
+	 * @param id
+	 * @return
+	 */
+	public Integer deleteMenu(String id) {
+		return menuMapper.deleteMenu(id);
+	}
+
+	/**
+	 * 根据菜单Id获取菜单可见的角色
+	 *
+	 * @param id
+	 * @return
+	 */
+	public List<Role> getMenuRoles(String id) {
+		return roleMapper.getMenuRole(id);
+	}
+
+	/**
+	 * 给菜单添加角色
+	 *
+	 * @param menuId 菜单Id
+	 * @param roleId 角色Id
+	 * @return
+	 */
+	public Integer menuAddRole(String menuId, String roleId) {
+		return roleMapper.menuAddRole(menuId, roleId, UUID.generateUUID());
+	}
+
+	/**
+	 * 判断菜单是否已存在该角色
+	 *
+	 * @param menuId
+	 * @param roleId
+	 * @return
+	 */
+	public Integer whetherMenuHasRole(String menuId, String roleId) {
+		return roleMapper.whetherMenuHasRole(menuId, roleId);
+	}
+
+	/**
+	 * 移除菜单的某个所见角色
+	 *
+	 * @param menuId
+	 * @param roleId
+	 * @return
+	 */
+	public Integer menuRemoveRole(String menuId, String roleId) {
+		return roleMapper.menuRemoveRole(menuId, roleId);
+	}
+
+	/**
+	 * 递归查询所有下级菜单，并根据是否有父菜单来设置可点击。
+	 *
+	 * @param menu
+	 * @return
+	 */
+	private List<Menu> chidrens(Menu menu, String userId) {
+		List<Menu> childrensMenus = menuMapper.getChildrensMenu(menu.getId(), userId);
+		if (childrensMenus == null || childrensMenus.isEmpty()) {
 			menu.setSelectable(true);
 			return null;
 		}
 		menu.setSelectable(false);
 		for (Menu childrensMenu : childrensMenus) {
 			childrensMenu.setParentName(menu.getName());
-			childrensMenu.setNodes(chidrens(childrensMenu,userId));
+			childrensMenu.setNodes(chidrens(childrensMenu, userId));
 		}
 		return childrensMenus;
 	}
+
 	/**
 	 * 递归查询所有下级菜单,清除禁用和是否父菜单.
+	 *
 	 * @param menu
 	 * @return
 	 */
@@ -100,12 +184,32 @@ public class MenuService {
 		menu.setDisabled(false);
 		menu.setSelectable(true);
 		List<Menu> childrensMenus = menuMapper.getManagerChildrensMenu(menu.getId());
-		if(childrensMenus ==null || childrensMenus.isEmpty()){
+		if (childrensMenus == null || childrensMenus.isEmpty()) {
 			return null;
 		}
 		for (Menu childrensMenu : childrensMenus) {
 			childrensMenu.setParentName(menu.getName());
 			childrensMenu.setNodes(chidrensByManager(childrensMenu));
+		}
+		return childrensMenus;
+	}
+
+	/**
+	 * 递归查询所有下级菜单，并根据是否有父菜单来设置可点击。
+	 *
+	 * @param menu
+	 * @return
+	 */
+	private List<Menu> chidrensByAdmin(Menu menu) {
+		List<Menu> childrensMenus = menuMapper.getManagerChildrensMenu(menu.getId());
+		if (childrensMenus == null || childrensMenus.isEmpty()) {
+			menu.setSelectable(true);
+			return null;
+		}
+		menu.setSelectable(false);
+		for (Menu childrensMenu : childrensMenus) {
+			childrensMenu.setParentName(menu.getName());
+			childrensMenu.setNodes(chidrensByAdmin(childrensMenu));
 		}
 		return childrensMenus;
 	}

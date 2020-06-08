@@ -38,7 +38,7 @@ public class UserDetailService implements UserDetailsService {
 		StringBuilder roleGranted = new StringBuilder();
 		for (Role role : roles) {
 			System.out.println(role.getName());
-			roleGranted.append(role.getId() + ",");
+			roleGranted.append("ROLE_"+role.getId() + ",");
 		}
 		List<GrantedAuthority> admin = AuthorityUtils.commaSeparatedStringToAuthorityList(roleGranted.toString());
 		// 从数据库取值登录
