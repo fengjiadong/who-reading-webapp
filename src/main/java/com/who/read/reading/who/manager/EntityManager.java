@@ -1,8 +1,12 @@
 package com.who.read.reading.who.manager;
 
 import com.who.read.reading.service.EntityService;
+import com.who.read.reading.who.condition.Expression;
+import com.who.read.reading.who.condition.FieldExpression;
+import com.who.read.reading.who.condition.NestedExpression;
+import com.who.read.reading.who.condition.Operator;
 import com.who.read.reading.who.datamodel.Entity;
-import com.who.read.reading.who.datamodel.EntityCondition;
+import com.who.read.reading.who.condition.EntityCondition;
 import com.who.read.reading.who.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -26,12 +30,18 @@ public class EntityManager {
 		return entityService.list(entityCondition);
 	}
 
+	public List<Entity> listAll(String typeId) {
+		EntityCondition entityCondition = new EntityCondition(typeId);
+		initSql(entityCondition);
+		return entityService.list(entityCondition);
+	}
+
 	public Entity getEntity(EntityCondition entityCondition) {
 		initSql(entityCondition);
 		return entityService.list(entityCondition).get(0);
 	}
 
-	public Entity getEntity(String id,String typeId) {
+	public Entity getEntity(String id, String typeId) {
 		EntityCondition entityCondition = new EntityCondition(typeId);
 		entityCondition.setId(id);
 		return getEntity(entityCondition);
@@ -40,6 +50,7 @@ public class EntityManager {
 
 	/**
 	 * 创建实体
+	 *
 	 * @param entity
 	 * @return
 	 */
@@ -48,19 +59,19 @@ public class EntityManager {
 		Object id = properties.get("id");
 		if (id == null) {
 			String id1 = entity.getId();
-			properties.put("id", id1==null?UUID.generateUUID():id1);
+			properties.put("id", id1 == null ? UUID.generateUUID() : id1);
 		}
 		Map<String, Object> entityInfo = entityService.entityInfo(entity.getTypeId());
 		StringBuilder sb = new StringBuilder();
 		StringBuilder values = new StringBuilder();
-		sb.append("insert into `" + entityInfo.get("name")+"` (");
+		sb.append("insert into `" + entityInfo.get("name") + "` (");
 		values.append("(");
 		Iterator<String> keys = properties.keySet().iterator();
 		while (keys.hasNext()) {
 			String key = keys.next();
 			sb.append("`" + key + "`");
 			values.append("'" + properties.get(key) + "'");
-			if(keys.hasNext()){
+			if (keys.hasNext()) {
 				sb.append(",");
 				values.append(",");
 			}
@@ -76,6 +87,7 @@ public class EntityManager {
 
 	/**
 	 * 生成查询sql
+	 *
 	 * @param entityCondition
 	 */
 	private void initSql(EntityCondition entityCondition) {
@@ -99,6 +111,18 @@ public class EntityManager {
 				}
 			}
 		}
+		// 复杂条件查询
+		List<Expression> expressions = entityCondition.getExpressions();
+		for (Expression expression : expressions) {
+			if (expression instanceof NestedExpression) {
+				String sql = nestedExpressionToSql(expression);
+				sb.append(" AND " + sql);
+			} else {
+				String sql = fieldNestedToSql(expression);
+				sb.append(" AND" + sql);
+			}
+		}
+
 		// 设置Id
 		List<String> ids = entityCondition.getIds();
 		if (ids != null) {
@@ -118,6 +142,80 @@ public class EntityManager {
 
 		entityCondition.setSql(sb.toString());
 	}
+
 	// 引用
 
+	/**
+	 * 组合条件
+	 * @param expression
+	 * @return
+	 */
+	public String nestedExpressionToSql(Expression expression) {
+		NestedExpression nested = (NestedExpression) expression;
+		NestedExpression.Operator operator = nested.getOperator();// and/or
+
+		StringBuilder nestSql = new StringBuilder("(");
+		List<Expression> expreList = nested.getExpressions();
+		Iterator<Expression> iterator = expreList.iterator();
+		while (iterator.hasNext()) {
+			Expression expre = iterator.next();
+			String sql = fieldNestedToSql(expre);
+			nestSql.append( sql);
+			if (iterator.hasNext()) {
+				nestSql.append(" " + operator.name() + " ");
+			}else{
+				nestSql.append(")");
+			}
+		}
+		return nestSql.toString();
+	}
+
+	/**
+	 * 字段条件
+	 * @param expression
+	 * @return
+	 */
+	public String fieldNestedToSql(Expression expression) {
+		FieldExpression fieldExpression = (FieldExpression) expression;
+		String field = fieldExpression.getField();
+		Operator operator = fieldExpression.getOperator();
+		Object value = fieldExpression.getValue();
+		StringBuilder sbSql = new StringBuilder(" `" + field + "` ");
+		if (operator == Operator.NotNull) {
+			sbSql.append(" IS NOT NULL and `" + field + "` != ''");
+		} else if (operator == Operator.Null) {
+			sbSql.append(" IS NULL or `" + field + "` = ''");
+		} else if (operator == Operator.Contains) {
+			sbSql.append(" like '%" + value + "%'");
+		} else if (operator == Operator.Equals) {
+			sbSql.append(" = '" + value + "'");
+		} else if (operator == Operator.NotEquals) {
+			sbSql.append(" != '" + value + "'");
+		} else if (operator == Operator.In) {
+			sbSql.append(" IN " + listToString(value));
+		} else if (operator == Operator.NotIn) {
+			sbSql.append(" NOT IN " + listToString(value));
+		} else {
+			return " 1 = 1";
+		}
+		return "("+sbSql.toString()+")";
+	}
+
+	public String listToString(Object value) {
+		StringBuilder sb = new StringBuilder();
+		sb.append("'@#@$%&^%$*'");
+		if(value instanceof List){
+			List values = (List) value;
+			for (Object o : values) {
+				sb.append(",'" + o+"'");
+			}
+		} else if (value instanceof Object[]) {
+			Object[] values = (Object[]) value;
+			for (int i = 0; i < values.length; i++) {
+				sb.append(",'" + values[i] + "'");
+			}
+		}
+		return "(" + sb.toString() + ")";
+
+	}
 }

@@ -1,4 +1,4 @@
-package com.who.read.reading.who.datamodel;
+package com.who.read.reading.who.condition;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,9 +28,10 @@ public class EntityCondition {
 	private String name;
 	private String displayName;
 	private Map<String, Object> properties;
-
 	private String sql;
 	private String sqlDispaly;
+	private List<Expression> expressions;
+
 
 	public String getTypeId() {
 		return typeId;
@@ -101,5 +102,24 @@ public class EntityCondition {
 
 	public void setSqlDispaly(String sqlDispaly) {
 		this.sqlDispaly = sqlDispaly;
+	}
+
+	// 高级查询相关--------------------------------------------------
+	public List<Expression> getExpressions() {
+		if (this.expressions == null) {
+			this.expressions = new ArrayList();
+		}
+		return this.expressions;
+	}
+	public EntityCondition addExpression(Expression exp) {
+		this.getExpressions().add(exp);
+		return this;
+	}
+	public EntityCondition addFieldExpression(String field, Operator operator, Object value) {
+		return this.addExpression(new FieldExpression(field, operator, value));
+	}
+
+	public EntityCondition addNestedExpression(NestedExpression.Operator operator, Expression... expressions) {
+		return this.addExpression(new NestedExpression(operator, expressions));
 	}
 }

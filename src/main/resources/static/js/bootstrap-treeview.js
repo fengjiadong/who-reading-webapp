@@ -142,7 +142,13 @@
 
 			// Search methods
 			search: $.proxy(this.search, this),
-			clearSearch: $.proxy(this.clearSearch, this)
+			clearSearch: $.proxy(this.clearSearch, this),
+			// 添加节点
+			addNode: $.proxy(this.addNode, this),
+			// setAddNode: $.proxy(this.setAddNode, this),
+			//删除节点
+			deleteNode: $.proxy(this.deleteNode, this),
+			setDeleteNode: $.proxy(this.setDeleteNode, this),
 		};
 	};
 
@@ -1204,6 +1210,44 @@
 			else {
 				return undefined;
 			}
+		}
+	};
+
+	Tree.prototype.addNode = function(identifiers, options) {
+		this.forEachIdentifier(identifiers,options,
+			$.proxy(function(node, options) {
+					this.setAddNode(node, options);
+				},
+				this));
+
+		this.setInitialStates({ nodes: this.tree }, 0);
+		this.render();
+	}
+
+	Tree.prototype.setAddNode = function(node, options) {
+		if (node.nodes == null) node.nodes = [];
+		if (options.node) {
+			node.nodes.push(options.node);
+		};
+	};
+
+	Tree.prototype.deleteNode = function (identifiers, options) {
+		this.forEachIdentifier(identifiers, options, $.proxy(function (node, options) {
+			var parentNode = this.getParent(node);
+			this.setDeleteNode(parentNode, node, options);
+		}, this));
+	};
+
+	Tree.prototype.setDeleteNode = function (node, deletenode, options) {
+		if (node.nodes != null) {
+			for (var i = node.nodes.length - 1; i >= 0; i--) {
+				var mynode = node.nodes[i];
+				if (mynode.id === deletenode.id) {
+					node.nodes.splice(i, 1);
+				}
+			}
+			this.setInitialStates({ nodes: this.tree }, 0);
+			this.render();
 		}
 	};
 

@@ -6,7 +6,11 @@ import com.who.read.reading.service.MenuService;
 import com.who.read.reading.service.RoleService;
 import com.who.read.reading.service.UserService;
 import com.who.read.reading.utils.Options;
+import com.who.read.reading.who.datamodel.Entity;
+import com.who.read.reading.who.condition.EntityCondition;
 import com.who.read.reading.who.datamodel.Menu;
+import com.who.read.reading.who.datamodel.Option;
+import com.who.read.reading.who.manager.EntityManager;
 import com.who.read.reading.who.util.UserSessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -34,6 +38,11 @@ public class WhoReadingController {
 
 	@Autowired
 	private RoleService roleService;
+
+	@Autowired
+	private EntityManager entityManager;
+
+
 
 	@RequestMapping("/login.html")
 	public String login() {
@@ -123,7 +132,26 @@ public class WhoReadingController {
 	}
 
 	@RequestMapping("/dataModule.html")
-	public String dataModule() {
+	public String dataModule(HttpServletRequest request) {
+		List<Entity> moduleList = entityManager.listAll(Options.Module_Id);
+		request.setAttribute("moduleList", moduleList);
+		request.setAttribute("size", moduleList.size());
 		return "index/dm/dataModule";
 	}
+	@RequestMapping("/table.html")
+	public String table(HttpServletRequest request) {
+		String id = request.getParameter("id");
+		EntityCondition entityCondition = new EntityCondition("2a9634d1ca9bd8215bb62495f796bc12");
+		entityCondition.setProperty("module", id);
+		List<Entity> tableList = entityManager.list(entityCondition);
+		request.setAttribute("tableList", tableList);
+		request.setAttribute("size", tableList.size());
+		return "index/dm/table";
+	}
+
+	@RequestMapping("/option.html")
+	public String option(HttpServletRequest request) {
+		return "index/option/option";
+	}
+
 }

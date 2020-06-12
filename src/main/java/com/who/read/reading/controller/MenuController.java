@@ -132,6 +132,9 @@ public class MenuController {
 		return ServiceUtils.returnMapRestlt("-1", "移除失败！", "");
 	}
 
-
-
+	@PreAuthorize("hasAuthority('ROLE_" + Options.Role_Admin + "')")
+	@RequestMapping("/updateMenuOrder")
+	public Object updateMenuOrder(@PathParam("id") String menuId,@PathParam("roleId") String roleId){
+		return "";
+	}
 }

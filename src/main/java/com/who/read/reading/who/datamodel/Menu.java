@@ -26,6 +26,8 @@ public class Menu {
 	private String explain;
 	private boolean validity;
 	private Map<String, Object> state;
+	// 下级节点
+	private List<Menu> nodes;
 
 	public Map<String, Object> getState() {
 		if (state == null) {
@@ -82,8 +84,7 @@ public class Menu {
 	}
 
 
-	// 下级节点
-	private List<Menu> nodes;
+
 
 	public String getId() {
 		return id;

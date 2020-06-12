@@ -22,7 +22,7 @@ public interface MenuMapper {
 	@Select("select * from `dm.menu`  ORDER BY `order`")
 	List<Menu> allMenu();
 
- 	// 根据用户查询用户所拥有的角色下的所有可显示的父菜单
+	// 根据用户查询用户所拥有的角色下的所有可显示的父菜单
 	@Select("SELECT * FROM `dm.menu` WHERE `id` IN (SELECT parentId FROM `dm.menu_role` WHERE roleId IN " +
 			"(SELECT roleId FROM `dm.user_role` WHERE parentId= #{userId})) and `validity` = 1 and ( parentId IS NULL or parentId = '') ORDER BY `order`")
 	List<Menu> allParentMenu(@Param(value = "userId") String userId);
@@ -36,23 +36,22 @@ public interface MenuMapper {
 
 	@Select("SELECT * FROM `dm.menu` WHERE `id` IN (SELECT parentId FROM `dm.menu_role` WHERE roleId IN  " +
 			"(SELECT roleId FROM `dm.user_role` WHERE parentId= #{userId})) and `validity` = 1 and parentId = #{parentId} ORDER BY `order`")
-	List<Menu>  getChildrensMenu(@Param(value = "parentId") String parentId,@Param(value = "userId") String userId);
+	List<Menu> getChildrensMenu(@Param(value = "parentId") String parentId, @Param(value = "userId") String userId);
 
 	@Select("select * from `dm.menu` where parentId = #{parentId}  ORDER BY `order`")
-	List<Menu>  getManagerChildrensMenu(@Param(value = "parentId") String parentId);
+	List<Menu> getManagerChildrensMenu(@Param(value = "parentId") String parentId);
 
 	@Select("select * from `dm.menu` where name = #{name}  ORDER BY `order`")
-	List<Menu>  getMenuByName(@Param(value = "name") String name);
+	List<Menu> getMenuByName(@Param(value = "name") String name);
 
 	// 按地点查询所有菜单，不区分权限。
 	@Select("select * from `dm.menu` where site = #{site} and `validity` = 1 ORDER BY `order` ")
-	List<Menu>  getMenuBySite(@Param(value = "site") String site);
+	List<Menu> getMenuBySite(@Param(value = "site") String site);
 
 	// 按地点查询所有菜单，区分角色权限。
 	@Select("SELECT * FROM `dm.menu` WHERE `id` IN (SELECT parentId FROM `dm.menu_role` WHERE roleId IN  " +
 			" (SELECT roleId FROM `dm.user_role` WHERE parentId= #{userId})) and `validity` = 1 and `site` = #{site}  ORDER BY `order`")
-	List<Menu>  getMenuBySiteAndRole(@Param(value = "site") String site, @Param(value = "userId") String userId);
-
+	List<Menu> getMenuBySiteAndRole(@Param(value = "site") String site, @Param(value = "userId") String userId);
 
 
 	@Insert("INSERT INTO `dm.menu` (`id`,`name`,`parentId`,`icon`,`code`,`action`,`selectable`,`disabled`,`order`,`site`,`explain`,`validity`) " +
@@ -65,5 +64,8 @@ public interface MenuMapper {
 	@Update("UPDATE `dm.menu` set `action` = #{menu.action},`icon` = #{menu.icon} , `name` = #{menu.name} , `explain` = #{menu.explain} , `disabled` = #{menu.disabled}, `validity` = #{menu.validity} ,`site` = #{menu.site} " +
 			"where id = #{menu.id}")
 	Integer updateMenu(@Param("menu") Menu menu);
+
+	@Update("UPDATE `dm.menu` set `order` = #{order} where `id` = #{id}")
+	Integer updateMenuOrder(@Param("id") String id, @Param("order") String order);
 
 }

@@ -56,7 +56,13 @@ public class Entity {
 		}
 		return properties;
 	}
-
+	public <T> T getProperty(String key,Class<T> type) {
+		Object obj = this.properties.get(key);
+		if(obj == null){
+			return null;
+		}
+		return (T)obj;
+	}
 	public Object getProperty(String key) {
 		return this.properties.get(key);
 	}

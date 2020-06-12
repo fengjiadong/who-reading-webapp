@@ -42,7 +42,7 @@
 					<span id="codeShow"></span>
 				</h6>
 				<hr>
-				<h6>是否显示：
+				<h6>是否有效：
 					<span id="validityShow"></span>
 				</h6>
 				<hr>
@@ -67,6 +67,13 @@
 				<hr>
 				<input type="button" class="btn btn-default" value="编辑" onclick="createUpShow('update')">
 				<input type="button" class="btn btn-default" value="删除" onclick="confirmDelete()">
+				<button class="btn btn-default" onclick="arrowUp()">
+					<span class="glyphicon glyphicon-arrow-up"></span>
+					位置下移
+				</button>
+				<button class="btn btn-default"><span class="glyphicon glyphicon-arrow-down"></span>位置上移
+				</button>
+
 			</div>
 		</div>
 	</div>
@@ -127,7 +134,7 @@
 								</div>
 							</div>
 							<div class="form-group">
-								<label class="col-sm-2 control-label">是否显示</label>
+								<label class="col-sm-2 control-label">是否有效</label>
 								<div class="col-sm-8">
 									<label class="radio-inline">
 										<input type="radio" name="validity" id="validity21" value="1">
@@ -230,13 +237,15 @@
 	var tree = [{name: "1"}];
 	var selectedNode = undefined;
 	$(function () {
+		$("#show").hide()
 		refreshMenu();
 		allRole();
 	})
+
 	// 刷新菜单
 	function refreshMenu() {
 		selectedNode = undefined;
-		$("#show").hide()
+		$("#show").hide(300)
 		$.ajax({
 			url: "/menu/allMenuManager",
 			type: "POST",
@@ -244,12 +253,11 @@
 			success: function (data) {
 				// console.log(data)
 				tree = data;
-				console.log(tree);
 				$('#div_group').treeview({
 					color: "#428bca",
 					enableLinks: false,
 					data: tree,
-					nodeIcon:"glyphicon-asterisk",
+					nodeIcon: "glyphicon glyphicon-asterisk",
 					onNodeSelected: function (event, node) {
 						// 从数据库获取菜单数据，因为控件里面的菜单数据是经过修改的。
 						$.ajax({
@@ -258,8 +266,10 @@
 							dataType: "json",
 							success: function (data) {
 								console.log(data)
-								if(data.code = '1'){
+								if (data.code = '1') {
 									selectedNode = data.result
+									selectedNode.nodeId = node.nodeId
+									selectedNode.parentName = node.parentName ? node.parentName : "无"
 									$("#nameShow").html(selectedNode.name)
 									$("#actionShow").html(selectedNode.action)
 									$("#codeShow").html(selectedNode.code)
@@ -269,8 +279,8 @@
 									$("#explainShow").html(selectedNode.explain)
 									$("#icoShow").html(selectedNode.icon)
 									$("#parentNameShow").html(node.parentName ? node.parentName : "无")
-									$("#show").show()
-								}else{
+									$("#show").show(300)
+								} else {
 									alert("菜单未找到。")
 									selectedNode = undefined;
 								}
@@ -287,26 +297,22 @@
 								var roles = data.result;
 								var rolesShow = '';
 								for (var i = 0; i < roles.length; i++) {
-									rolesShow += roles[i].name+roles[i].displayName + '、'
+									rolesShow += roles[i].name + roles[i].displayName + '、'
 								}
 								$("#rolesShow").html(rolesShow)
 							}
 						})
-
-
 					},
 					onNodeUnselected: function (event, node) {
 						selectedNode = undefined;
-						$("#show").hide()
+						$("#show").hide(2)
 						console.log('onNodeUnselected')
 					}
 				});
 			}
 		})
 	}
-	function refreshSingleMenu(){
 
-	}
 
 	// 显示新增或修改菜单的窗口
 	function createUpShow(type) {
@@ -355,6 +361,7 @@
 			getRolesByMenuId();
 		}
 	}
+
 	// 修改菜单保存
 	function saveMenu() {
 		var param = {
@@ -426,8 +433,8 @@
 		if (isRemove) {
 
 			var param = {
-				menuId:selectedNode.id,
-				roleId:roleId
+				menuId: selectedNode.id,
+				roleId: roleId
 			}
 			$.ajax({
 				url: "/menu/menuRemoveRole",
@@ -441,6 +448,7 @@
 			});
 		}
 	}
+
 	// 删除菜单
 	function deleteMenu() {
 		if (selectedNode == undefined) {
@@ -499,16 +507,17 @@
 				console.log(data)
 				for (var i = 0; i < data.length; i++) {
 					// addRole
-					$("#addRole").append("<option value='"+data[i].id+"'>"+data[i].displayName+"</option>")
+					$("#addRole").append("<option value='" + data[i].id + "'>" + data[i].displayName + "</option>")
 				}
 			}
 		});
 	}
+
 	// 把角色添加到菜单中
 	function addRole() {
 		var param = {
-			menuId:selectedNode.id,
-			roleId:$("#addRole").val()
+			menuId: selectedNode.id,
+			roleId: $("#addRole").val()
 		}
 		$.ajax({
 			url: "/menu/menuAddRole",
@@ -522,5 +531,23 @@
 		});
 	}
 
+	function arrowUp() {
+		// $('#div_group').treeview({
+		// $('#div_group').treeview('remove');
+		// $('#div_group').treeview('revealNode', [ 3 ]);
+		// var node = $('#div_group').treeview('getSiblings', 3) // 获取兄弟节点
+		// console.log(selectedNode)
+		var node = $('#div_group').treeview('getNode', selectedNode.nodeId);
+		console.log(node)
+			var ss = [
+			  123,
+				{
+					nodes:
+						{name: '123123', id: '123123123123'}, silent: true}
+			]
+		console.log(ss)
+		$("#div_group").treeview("addNode", ss);
+		// $("#div_group").treeview("deleteNode", [selectedNode.nodeId, { silent: true }]);
+	}
 </script>
 

@@ -2,7 +2,7 @@ package com.who.read.reading.service;
 
 import com.who.read.reading.mapper.EntityMapper;
 import com.who.read.reading.who.datamodel.Entity;
-import com.who.read.reading.who.datamodel.EntityCondition;
+import com.who.read.reading.who.condition.EntityCondition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,7 +64,7 @@ public class EntityService {
 		Object schema = fieldMap.get("schema");
 		// 如果等于引用ref
 		if ("reference".equals(type.toString())) {
-			String sql = "select name from " + schema + " where id='" + value + "'";
+			String sql = "select name from `" + schema + "` where id='" + value + "'";
 			Object o = entityMapper.fieldDisplay(sql);
 			return o;
 		} else if ("option".equals(type.toString())) {

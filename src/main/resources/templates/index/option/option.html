@@ -3,8 +3,236 @@
 <head>
 	<meta charset="UTF-8">
 	<title>选项管理</title>
+	<link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+
+	<!-- jQuery (Bootstrap 的所有 JavaScript 插件都依赖 jQuery，所以必须放在前边) -->
+	<script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
+	<!-- 加载 Bootstrap 的所有 JavaScript 插件。你也可以根据需要只加载单个插件。 -->
+	<script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<script src="/js/bootstrap-treeview.js"></script>
+	<script src="/js/rightKey.js"></script>
+	<link rel="stylesheet" href="/css/rightKey.css">
 </head>
 <body>
+<div class="container">
+	<br>
+	<div class="row">
+		<div class="col-lg-5">
+			<input type="button" class="btn btn-default" value="新增选项" onclick="createUpShow('add')">
+			<input type="button" class="btn btn-default" value="刷新选项" onclick="refreshMenu()">
+			<hr>
+			<div id="groupTree" class="group_tree">
+				<div class="div_group" id="div_group"></div>
+			</div>
+		</div>
+		<div class="col-lg-6">
+			<div id="show">
+				<h6>上级选项名称：
+					<span id="parentNameShow"></span>
+				</h6>
+				<hr>
+				<h6>名称：
+					<span id="nameShow"></span>
+				</h6>
+				<hr>
+				<h6>代码：
+					<span id="codeShow"></span>
+				</h6>
+				<hr>
+				<h6>说明：
+					<span id="explainShow"></span>
+				</h6>
+				<hr>
+				<h6>是否禁用：
+					<span id="disabledShow"></span>
+				</h6>
+				<hr>
+				<h6>是否系统定义：
+					<span id="isSysShow"></span>
+				</h6>
+				<hr>
+				<h6>是否可选：
+					<span id="selectableShow"></span>
+				</h6>
+				<input type="button" class="btn btn-default" value="编辑" onclick="createUpShow('update')">
+				<input type="button" class="btn btn-default" value="删除">
+			</div>
+		</div>
+	</div>
+</div>
 
+<!-- 模态框（Modal）-->
+<div class="modal fade bs-example-modal-lg" id="createUp" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+	 data-backdrop="false"
+	 aria-hidden="false">
+	<div class="modal-dialog modal-md">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+				<p class="modal-title" id="myModalLabel">编辑菜单</p>
+			</div>
+			<div class="modal-body">
+				<div class="tab-content">
+					<div role="tabpanel" class="tab-pane active" id="menuInfo">
+						<!--编辑或添加-->
+						<form class="form-horizontal">
+
+							<div class="form-group">
+								<label for="parentName" class="col-sm-2 control-label">上级选项</label>
+								<div class="col-sm-8">
+									<input id="parentName" type="text" class="form-control " disabled placeholder="无">
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="name" class="col-sm-2 control-label">名称</label>
+								<div class="col-sm-8">
+									<input id="name" type="text" class="form-control" placeholder="请输入选项名称">
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="code" class="col-sm-2 control-label">代码</label>
+								<div class="col-sm-8">
+									<input id="code" type="text" class="form-control" placeholder="code">
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="explain" class="col-sm-2 control-label">说明</label>
+								<div class="col-sm-8">
+									<input id="explain" type="text" class="form-control" placeholder="请输入说明描述">
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-2 control-label">是否禁用</label>
+								<div class="col-sm-8">
+									<label class="radio-inline">
+										<input type="radio" name="disabled" id="disabled21" value="1">
+										是
+									</label>
+									<label class="radio-inline">
+										<input type="radio" name="disabled" id="disabled22" value="0">
+										否
+									</label>
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-2 control-label">是否可选</label>
+								<div class="col-sm-8">
+									<label class="radio-inline">
+										<input type="radio" name="selectable" id="selectable1" value="1">
+										是
+									</label>
+									<label class="radio-inline">
+										<input type="radio" name="selectable" id="selectable2" value="0">
+										否
+									</label>
+								</div>
+							</div>
+						</form>
+						<!--end-->
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+				<button type="button" class="btn btn-primary" id="addMenu" onclick="addMenu()">保存</button>
+				<button type="button" class="btn btn-primary" id="saveMenu" onclick="saveMenu()">保存</button>
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+
+
+
+	$(function () {
+		$("#show").hide()
+		refreshMenu();
+	})
+	var selectedNode = undefined;
+	// 刷新选项
+	function refreshMenu() {
+		$("#show").hide(300)
+		$.ajax({
+			url: "/option/allOption",
+			type: "POST",
+			dataType: "json",
+			success: function (data) {
+				console.log(data)
+				$('#div_group').treeview({
+					color: "#428bca",
+					enableLinks: false,
+					data: data,
+					nodeIcon: "",
+					onNodeSelected: function (event, node) {
+						console.log(node)
+						$.ajax({
+							url: "/option/getOption/" + node.id,
+							type: "POST",
+							dataType: "json",
+							success: function (data) {
+								console.log(data)
+								if (data.code = '1') {
+									$("#show").show(300)
+									selectedNode = data.result
+									selectedNode.parentName = node.parentName ? node.parentName : "无"
+									$("#parentNameShow").html(node.parentName ? node.parentName : "无")
+									$("#disabledShow").html(selectedNode.disabled ? "是" : "否")
+									$("#nameShow").html(selectedNode.name)
+									$("#codeShow").html(selectedNode.code)
+									$("#explainShow").html(selectedNode.explain)
+									$("#isSysShow").html(selectedNode.sys? "是" : "否")
+									$("#selectableShow").html(selectedNode.selectable ? "是" : "否")
+								}
+							}
+						})
+					}
+				})
+			}
+		})
+	}
+
+	// 显示新增或修改选项的窗口
+	function createUpShow(type) {
+		$("#createUp").modal('show');
+		$("#saveMenu").hide()
+		$("#addMenu").hide()
+		if (type == 'add') {
+			$("#myModalLabel").html("新增菜单")
+			$("#addMenu").show(100)
+			$("#parentName").val(selectedNode == undefined ? "无" : selectedNode.name);
+			var disabledArr = $("[name='disabled']")
+			disabledArr.eq(0).prop("checked", false);
+			disabledArr.eq(1).prop("checked", true);
+			var selectableArr = $("[name='selectable']")
+			selectableArr.eq(1).prop("checked", false);
+			selectableArr.eq(0).prop("checked", true);
+		}else {
+			$("#myModalLabel").html("编辑菜单")
+			$("#saveMenu").show(100)
+			$("#parentName").val(selectedNode.parentName);
+			$("#name").val(selectedNode.name);
+			$("#code").val(selectedNode.code);
+			$("#explain").val(selectedNode.explain);
+			var selectableArr = $("[name='selectable']")
+			for (var i = 0; i < selectableArr.length; i++) {
+				if (selectableArr.eq(i).val() == (selectedNode.selectable ? '1' : '0')) {
+					selectableArr.eq(i).prop("checked", true);
+				}
+			}
+			var disabledArr = $("[name='disabled']")
+			for (var i = 0; i < disabledArr.length; i++) {
+				if (disabledArr.eq(i).val() == (selectedNode.disabled ? '1' : '0')) {
+					disabledArr.eq(i).prop("checked", true);
+				}
+			}
+		}
+	}
+	function selected(e) {
+		// info
+		$("[name='option']").removeClass("info");
+		// alert($(this))
+		$(e).addClass('info')
+	}
+</script>
 </body>
 </html>
