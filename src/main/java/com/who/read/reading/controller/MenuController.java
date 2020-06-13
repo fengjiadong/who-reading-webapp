@@ -55,7 +55,12 @@ public class MenuController {
 			return ServiceUtils.returnMapRestlt("-1", "请输入菜单名称！", "");
 		}
 		Integer result = menuService.createMenu(menu);
-		return ServiceUtils.returnMapRestlt("1", "新增成功！", result);
+		if(result > 0){
+			Menu menuById = menuService.getMenuById(menu.getId());
+			menuById.setSelectable(true);
+			return ServiceUtils.returnMapRestlt("1", "新增成功！", menuById);
+		}
+		return ServiceUtils.returnMapRestlt("-1", "新增失败！", "");
 	}
 
 	// 修改某个菜单
