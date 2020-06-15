@@ -65,7 +65,24 @@ public interface MenuMapper {
 			"where id = #{menu.id}")
 	Integer updateMenu(@Param("menu") Menu menu);
 
+	// 更新菜单的order
 	@Update("UPDATE `dm.menu` set `order` = #{order} where `id` = #{id}")
-	Integer updateMenuOrder(@Param("id") String id, @Param("order") String order);
+	Integer updateMenuOrder(@Param("id") String id, @Param("order") Integer order);
+
+	// 根据parentId找到下面有菜单数量
+	@Select("SELECT count(0) FROM `dm.menu` where parentId = #{parentId}")
+	Integer countByParentId(@Param("parentId") String parentId);
+
+	// 查询小于order的第一条数据
+	@Select("SELECT * FROM `dm.menu` WHERE  `parentId` = #{parentId} and `order` <= #{order} and `id` != #{id} order  by  `order` desc LIMIT 1 ")
+	List<Menu> getMenuByLtOrderAndParentId(@Param(value = "order") Integer order, @Param(value = "parentId") String parentId, @Param(value = "id") String id);
+
+	// 查询大于order的第一条数据
+	@Select("SELECT * FROM `dm.menu` WHERE  `parentId` = #{parentId} and `order` >= #{order} and `id` != #{id} order  by  `order`  LIMIT 1")
+	List<Menu> getMenuByGtOrderAndParentId(@Param(value = "order") Integer order, @Param(value = "parentId") String parentId, @Param(value = "id") String id);
+
+	// 查询菜单的parentId
+	@Select("SELECT `parentId` FROM `dm.menu` where `id` = #{id}")
+	String getParentId(@Param(value = "id") String id);
 
 }

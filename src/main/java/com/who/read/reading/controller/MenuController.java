@@ -30,19 +30,19 @@ public class MenuController {
 	MenuService menuService;
 
 	// 普通用户得到菜单
-	@RequestMapping("/allMenu")
-	public Object allMenu(HttpSession session){
+	@RequestMapping("/query/{id}")
+	public Object allMenu(@PathVariable("id")String id) {
 		Boolean isAdmin = UserSessionFactory.currentUser().hasRole(Options.Role_Admin);
-		if(isAdmin){
+		if (isAdmin) {
 			return menuService.allMenuManager(true);
 		}
-		return menuService.allMenu();
+		return menuService.queryMenuByParent(id);
 	}
 
 	//管理员得到所有菜单
 	@PreAuthorize("hasAuthority('ROLE_" + Options.Role_Admin + "')")
 	@RequestMapping("/allMenuManager")
-	public Object allMenuManager(HttpSession session){
+	public Object allMenuManager(HttpSession session) {
 		List<Menu> menus = menuService.allMenuManager();
 		return menus;
 	}
@@ -50,12 +50,12 @@ public class MenuController {
 	// 创建一个菜单
 	@PreAuthorize("hasAuthority('ROLE_" + Options.Role_Admin + "')")
 	@RequestMapping("/create")
-	public Object create(@PathParam("menu") Menu menu){
-		if(menu.getName() == null || menu.getName().trim().equals("")){
+	public Object create(@PathParam("menu") Menu menu) {
+		if (menu.getName() == null || menu.getName().trim().equals("")) {
 			return ServiceUtils.returnMapRestlt("-1", "请输入菜单名称！", "");
 		}
 		Integer result = menuService.createMenu(menu);
-		if(result > 0){
+		if (result > 0) {
 			Menu menuById = menuService.getMenuById(menu.getId());
 			menuById.setSelectable(true);
 			return ServiceUtils.returnMapRestlt("1", "新增成功！", menuById);
@@ -66,37 +66,39 @@ public class MenuController {
 	// 修改某个菜单
 	@PreAuthorize("hasAuthority('ROLE_" + Options.Role_Admin + "')")
 	@RequestMapping("/update")
-	public Object update(@PathParam("menu") Menu menu){
-		if(menu.getId() == null || "".equals(menu.getId().trim())){
+	public Object update(@PathParam("menu") Menu menu) {
+		if (menu.getId() == null || "".equals(menu.getId().trim())) {
 			return ServiceUtils.returnMapRestlt("-1", "菜单Id不能为空", "");
 		}
-		if(menu.getName() == null || menu.getName().trim().equals("")){
+		if (menu.getName() == null || menu.getName().trim().equals("")) {
 			return ServiceUtils.returnMapRestlt("-1", "请输入菜单名称！", "");
 		}
 		Integer result = menuService.updateMenu(menu);
-		if(result > 0){
+		if (result > 0) {
 			Menu menuById = menuService.getMenuById(menu.getId());
 			menuById.setSelectable(true);
 			return ServiceUtils.returnMapRestlt("1", "更新成功！", menuById);
 		}
 		return ServiceUtils.returnMapRestlt("1", "更新失败！", result);
 	}
+
 	//updateMenu
 	//获取一个菜单
 	@RequestMapping("/getMenu/{id}")
-	public Object getMenu(@PathVariable("id") String id){
-		if(id == null || "".equals(id.trim())){
+	public Object getMenu(@PathVariable("id") String id) {
+		if (id == null || "".equals(id.trim())) {
 			return ServiceUtils.returnMapRestlt("1", "菜单Id不能为空！", "");
 		}
 		Menu menu = menuService.getMenuById(id);
 		return ServiceUtils.returnMapRestlt("1", "查询成功！", menu);
 	}
+
 	// 删除一个菜单
 	@PreAuthorize("hasAuthority('ROLE_" + Options.Role_Admin + "')")
 	@RequestMapping("/delete/{id}")
-	public Object delete(@PathVariable("id") String id){
+	public Object delete(@PathVariable("id") String id) {
 		Integer menu = menuService.deleteMenu(id);
-		if(menu > 0){
+		if (menu > 0) {
 			return ServiceUtils.returnMapRestlt("1", "删除成功！", menu);
 		}
 		return ServiceUtils.returnMapRestlt("-1", "删除失败！", menu);
@@ -105,23 +107,24 @@ public class MenuController {
 	// 根据菜单得到菜单可见的角色
 	@PreAuthorize("hasAuthority('ROLE_" + Options.Role_Admin + "')")
 	@RequestMapping("/role/{id}")
-	public Object getMenuRole(@PathVariable("id") String id){
+	public Object getMenuRole(@PathVariable("id") String id) {
 		List<Role> menu = menuService.getMenuRoles(id);
-		if(menu != null){
+		if (menu != null) {
 			return ServiceUtils.returnMapRestlt("1", "获取成功！", menu);
 		}
 		return ServiceUtils.returnMapRestlt("-1", "未找到对应的角色！", "");
 	}
+
 	// 给菜单添加角色
 	@PreAuthorize("hasAuthority('ROLE_" + Options.Role_Admin + "')")
 	@RequestMapping("/menuAddRole")
-	public Object menuAddRole(@PathParam("menuId") String menuId,@PathParam("roleId") String roleId){
+	public Object menuAddRole(@PathParam("menuId") String menuId, @PathParam("roleId") String roleId) {
 		Integer whetherMenuHasRole = menuService.whetherMenuHasRole(menuId, roleId);
-		if(whetherMenuHasRole > 0 ){
+		if (whetherMenuHasRole > 0) {
 			return ServiceUtils.returnMapRestlt("-1", "已添加该角色，不能重复添加！", "");
 		}
 		Integer integer = menuService.menuAddRole(menuId, roleId);
-		if(integer > 0){
+		if (integer > 0) {
 			return ServiceUtils.returnMapRestlt("1", "添加成功！", integer);
 		}
 		return ServiceUtils.returnMapRestlt("-1", "添加失败！", "");
@@ -130,13 +133,13 @@ public class MenuController {
 	// 给菜单添加角色
 	@PreAuthorize("hasAuthority('ROLE_" + Options.Role_Admin + "')")
 	@RequestMapping("/menuRemoveRole")
-	public Object menuRemoveRole(@PathParam("menuId") String menuId,@PathParam("roleId") String roleId){
+	public Object menuRemoveRole(@PathParam("menuId") String menuId, @PathParam("roleId") String roleId) {
 		Integer whetherMenuHasRole = menuService.whetherMenuHasRole(menuId, roleId);
-		if(whetherMenuHasRole < 1 ){
+		if (whetherMenuHasRole < 1) {
 			return ServiceUtils.returnMapRestlt("-1", "角色已移除，不能重复移除。", "");
 		}
 		Integer integer = menuService.menuRemoveRole(menuId, roleId);
-		if(integer > 0){
+		if (integer > 0) {
 			return ServiceUtils.returnMapRestlt("1", "移除成功！", integer);
 		}
 		return ServiceUtils.returnMapRestlt("-1", "移除失败！", "");
@@ -144,7 +147,18 @@ public class MenuController {
 
 	@PreAuthorize("hasAuthority('ROLE_" + Options.Role_Admin + "')")
 	@RequestMapping("/updateMenuOrder")
-	public Object updateMenuOrder(@PathParam("id") String menuId,@PathParam("roleId") String roleId){
+	public Object updateMenuOrder(@PathParam("id") String menuId, @PathParam("roleId") String roleId) {
 		return "";
+	}
+
+
+	@RequestMapping("/move/{type}/{id}")
+	public Object move(@PathVariable("id") String id, @PathVariable("type") String type) {
+		Integer result = menuService.moveMenu(id, type);
+		if (result > 0) {
+			return ServiceUtils.returnMapRestlt("1", "移动成功！", "");
+		} else {
+			return ServiceUtils.returnMapRestlt("1", "移动失败，菜单为null！", "");
+		}
 	}
 }

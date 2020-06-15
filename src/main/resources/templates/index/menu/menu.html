@@ -447,6 +447,11 @@
 					for (var i = 0; i < roleLists.length; i++) {
 						addRoleToService(data.result.id, roleLists[i]);
 					}
+					if(selectedNode != undefined ){
+						var selected = $("#div_group").treeview("getNodeById", selectedNode.id);
+						console.log("selected",selected)
+					}
+
 					// refreshMenu();
 				} else {
 					alert(data.msg)
@@ -596,18 +601,41 @@
 	}
 
 	function moveUp() {
-		$("#div_group").treeview("moveNode", [selectedNode.nodeId, 'up']);
-		var select = $('#div_group').treeview('getSelected');
-		console.log(select)
-		selectedNode = select[0];
 
+		$.ajax({
+			url: "/menu/move/up/" + selectedNode.id,
+			type: "POST",
+			dataType: "json",
+			success: function (data) {
+				if (data.code == "1") {
+					$("#div_group").treeview("moveNode", [selectedNode.nodeId, 'up']);
+					var select = $('#div_group').treeview('getSelected');
+					console.log(select)
+					selectedNode = select[0];
+				} else {
+					alert(data.msg)
+				}
+			}
+		});
 	}
 
 	function moveDown() {
-		$("#div_group").treeview("moveNode", [selectedNode.nodeId, 'down']);
-		var select = $('#div_group').treeview('getSelected');
-		console.log(select)
-		selectedNode = select[0];
+		$.ajax({
+			url: "/menu/move/down/" + selectedNode.id,
+			type: "POST",
+			dataType: "json",
+			success: function (data) {
+				if (data.code == "1") {
+					$("#div_group").treeview("moveNode", [selectedNode.nodeId, 'down']);
+					var select = $('#div_group').treeview('getSelected');
+					selectedNode = select[0];
+				} else {
+					alert(data.msg)
+				}
+			}
+		});
+
+
 	}
 </script>
 

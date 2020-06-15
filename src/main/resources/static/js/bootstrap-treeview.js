@@ -319,7 +319,8 @@
 			// index nodes in a flattened structure for use later
 			_this.nodes.push(node);
 			_this.nodesCopy.push(node);
-
+			// console.log("添加:",node)
+			console.log("添加后:",_this.nodesCopy)
 			// recurse child nodes and transverse the tree
 			if (node.nodes) {
 				_this.setInitialStates(node, level);
@@ -725,10 +726,13 @@
 	 @return {Object} node - Matching node
 	 */
 	Tree.prototype.getNodeById = function (id) {
-		console.log(this.nodesCopy)
+		if (id == undefined) {
+			return undefined
+		}
+		console.log(this.nodesCopy);
 		var item = undefined;
 		this.nodesCopy.forEach(function (value) {
-			if (value.id = id) {
+			if (value.id == id) {
 				item = value;
 			}
 		})
@@ -1204,7 +1208,7 @@
 		attribute = attribute || 'name';
 
 		var _this = this;
-		return $.grep(this.nodesCopy, function (node) {
+		return $.grep(this.nodes, function (node) {
 			var val = _this.getNodeValue(node, attribute);
 			if (typeof val === 'string') {
 				return val.match(new RegExp(pattern, modifier));
@@ -1244,7 +1248,9 @@
 	Tree.prototype.addNewNodes = function (identifiers, options) {
 		// this.tree.push(options.nodes);
 		this.setNewNodes(this.tree, identifiers, options.nodes)
-		this.nodesCopy = []
+		this.nodesCopy.splice(0,this.nodesCopy.length);
+		this.nodes = []
+		console.log("给节点添加子节点后",this.nodesCopy)
 		this.setInitialStates({nodes: this.tree}, 0);
 		this.render();
 	};

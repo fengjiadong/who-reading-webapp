@@ -25,6 +25,12 @@ public class MenuService {
 	@Autowired
 	private RoleMapper roleMapper;
 
+	public List<Menu> queryMenuByParent(String parentId) {
+		String id = UserSessionFactory.currentUser().getId();
+		Menu menu = getMenuById(parentId);
+		return chidrens(menu, id);
+	}
+
 	public List<Menu> allMenu() {
 		String id = UserSessionFactory.currentUser().getId();
 		List<Menu> menus = menuMapper.allParentMenu(id);
@@ -58,8 +64,9 @@ public class MenuService {
 	public List<Menu> getMenuBySite(String site) {
 		return this.menuMapper.getMenuBySite(site);
 	}
-	public List<Menu> getMenuBySiteAndRole(String site,String userId) {
-		return this.menuMapper.getMenuBySiteAndRole(site,userId);
+
+	public List<Menu> getMenuBySiteAndRole(String site, String userId) {
+		return this.menuMapper.getMenuBySiteAndRole(site, userId);
 	}
 
 	public Menu getMenuById(String id) {
@@ -84,6 +91,8 @@ public class MenuService {
 		if (menu.getId() == null || "".equals(menu.getId().trim())) {
 			menu.setId(UUID.generateUUID());
 		}
+		Integer count = countByParentId(menu.getParentId());
+		menu.setOrder(count);
 		return menuMapper.createMenu(menu);
 	}
 
@@ -200,7 +209,7 @@ public class MenuService {
 	 * @param menu
 	 * @return
 	 */
-	private List<Menu> chidrensByAdmin(Menu menu) {
+	public List<Menu> chidrensByAdmin(Menu menu) {
 		List<Menu> childrensMenus = menuMapper.getManagerChildrensMenu(menu.getId());
 		if (childrensMenus == null || childrensMenus.isEmpty()) {
 			menu.setSelectable(true);
@@ -214,7 +223,44 @@ public class MenuService {
 		return childrensMenus;
 	}
 
-	private Integer updateMenuOrder(String id) {
-		return null;
+	/**
+	 * 根据parentId得到下面的菜单数量
+	 *
+	 * @param parentId
+	 * @return
+	 */
+	public Integer countByParentId(String parentId) {
+		return menuMapper.countByParentId(parentId);
 	}
+
+	/**
+	 * 移动菜单位置
+	 *
+	 * @param id
+	 * @param type
+	 * @return
+	 */
+	public Integer moveMenu(String id, String type) {
+		String parentId = menuMapper.getParentId(id);
+		Menu menu = menuMapper.getMenuById(id);
+		if (menu != null) {
+			List<Menu> exMenus = null;
+			Integer order = menu.getOrder(); // order
+			if ("up".equals(type)) {
+				menu.setOrder(menu.getOrder() - 1);
+				exMenus = menuMapper.getMenuByLtOrderAndParentId(order, parentId,id);
+			} else {
+				menu.setOrder(menu.getOrder() + 1);
+				exMenus = menuMapper.getMenuByGtOrderAndParentId(order, parentId,id);
+			}
+			if (!exMenus.isEmpty()) {
+				Menu exMenu = exMenus.get(0);
+				menuMapper.updateMenuOrder(exMenu.getId(), order);
+			}
+			menuMapper.updateMenuOrder(menu.getId(), menu.getOrder());
+			return 1;
+		}
+		return 0;
+	}
+
 }
