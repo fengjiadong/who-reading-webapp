@@ -243,6 +243,51 @@
 		allRole();
 	})
 
+	
+	function selectedNodeEvent(node) {
+		// 从数据库获取菜单数据，因为控件里面的菜单数据是经过修改的。
+		$.ajax({
+			url: "/menu/getMenu/" + node.id,
+			type: "POST",
+			dataType: "json",
+			success: function (data) {
+				console.log(data)
+				if (data.code = '1') {
+					selectedNode = data.result
+					selectedNode.nodeId = node.nodeId
+					selectedNode.parentName = node.parentName ? node.parentName : "无"
+					$("#nameShow").html(selectedNode.name)
+					$("#actionShow").html(selectedNode.action)
+					$("#codeShow").html(selectedNode.code)
+					$("#disabledShow").html(selectedNode.disabled ? "是" : "否")
+					$("#validityShow").html(selectedNode.validity ? "是" : "否")
+					$("#siteShow").html(selectedNode.site)
+					$("#explainShow").html(selectedNode.explain)
+					$("#icoShow").html(selectedNode.icon)
+					$("#parentNameShow").html(node.parentName ? node.parentName : "无")
+					$("#show").show(300)
+					// 找到菜单的可见角色
+					$.ajax({
+						url: "/menu/role/" + node.id,
+						type: "POST",
+						dataType: "json",
+						success: function (dataResult) {
+							var roles = dataResult.result;
+							var rolesShow = '';
+							for (var i = 0; i < roles.length; i++) {
+								rolesShow += roles[i].name + roles[i].displayName + '、'
+							}
+							$("#rolesShow").html(rolesShow)
+						}
+					})
+				} else {
+					alert("菜单未找到。")
+					selectedNode = undefined;
+				}
+			}
+		})
+	}
+	
 	// 刷新菜单
 	function refreshMenu() {
 		selectedNode = undefined;
@@ -260,49 +305,10 @@
 					data: tree,
 					nodeIcon: "glyphicon glyphicon-asterisk",
 					onNodeSelected: function (event, node) {
-						// 从数据库获取菜单数据，因为控件里面的菜单数据是经过修改的。
-						$.ajax({
-							url: "/menu/getMenu/" + node.id,
-							type: "POST",
-							dataType: "json",
-							success: function (data) {
-								console.log(data)
-								if (data.code = '1') {
-									selectedNode = data.result
-									selectedNode.nodeId = node.nodeId
-									selectedNode.parentName = node.parentName ? node.parentName : "无"
-									$("#nameShow").html(selectedNode.name)
-									$("#actionShow").html(selectedNode.action)
-									$("#codeShow").html(selectedNode.code)
-									$("#disabledShow").html(selectedNode.disabled ? "是" : "否")
-									$("#validityShow").html(selectedNode.validity ? "是" : "否")
-									$("#siteShow").html(selectedNode.site)
-									$("#explainShow").html(selectedNode.explain)
-									$("#icoShow").html(selectedNode.icon)
-									$("#parentNameShow").html(node.parentName ? node.parentName : "无")
-									$("#show").show(300)
-								} else {
-									alert("菜单未找到。")
-									selectedNode = undefined;
-								}
-							}
-						})
+						selectedNodeEvent(node);
 
 						// $("#orderShow").html(node.order)
-						// 找到菜单的可见角色
-						$.ajax({
-							url: "/menu/role/" + node.id,
-							type: "POST",
-							dataType: "json",
-							success: function (data) {
-								var roles = data.result;
-								var rolesShow = '';
-								for (var i = 0; i < roles.length; i++) {
-									rolesShow += roles[i].name + roles[i].displayName + '、'
-								}
-								$("#rolesShow").html(rolesShow)
-							}
-						})
+
 					},
 					onNodeUnselected: function (event, node) {
 						selectedNode = undefined;
@@ -383,10 +389,14 @@
 			data: param,
 			dataType: "json",
 			success: function (data) {
-				alert(data.msg)
+				// alert(data.msg)
 				if (data.code = "1") {
 					$("#createUp").modal('hide');
-					refreshMenu();
+					data.result.nodeId = selectedNode.nodeId
+					data.result.state.selected = true
+					$("#div_group").treeview("updateNode", data.result);
+					var select = $('#div_group').treeview('getSelected');
+					selectedNodeEvent(select)
 				}
 			}
 		});

@@ -152,7 +152,9 @@
 			deleteNode: $.proxy(this.deleteNode, this),
 			setDeleteNode: $.proxy(this.setDeleteNode, this),
 			// 移动节点
-			moveNode: $.proxy(this.moveNode, this)
+			moveNode: $.proxy(this.moveNode, this),
+			// 修改节点
+			updateNode: $.proxy(this.updateNode, this)
 		};
 	};
 
@@ -726,8 +728,8 @@
 		console.log(this.nodesCopy)
 		var item = undefined;
 		this.nodesCopy.forEach(function (value) {
-			if(value.id = id){
-				item =  value;
+			if (value.id = id) {
+				item = value;
 			}
 		})
 		return item;
@@ -1308,7 +1310,7 @@
 		var _this = this;
 		tree.forEach(function (item, index) {
 			if (item.nodeId == nodeId) {
-				if(index == 0){
+				if (index == 0) {
 					console.log("已经是最上层，无法移动。")
 					return;
 				}
@@ -1325,12 +1327,12 @@
 	Tree.prototype.moveDown = function (tree, nodeId) {
 		var _this = this;
 		tree.forEach(function (item, index) {
-			if(nodeId == null){
+			if (nodeId == null) {
 				return;
 			}
 			if (item.nodeId == nodeId) {
 				// console.log(tree.length)
-				if((index+1) == tree.length){
+				if ((index + 1) == tree.length) {
 					console.log("已经是最下层，无法移动。")
 					return;
 				}
@@ -1342,6 +1344,36 @@
 			}
 			if (item.nodes != null) {
 				_this.moveDown(item.nodes, nodeId)
+			}
+		})
+	}
+	/**
+	 * 修改节点信息
+	 * @param node
+	 */
+	Tree.prototype.updateNode = function (node) {
+		// console.log(node)
+		this.upNode(this.tree, node);
+		this.nodesCopy = []
+		this.setInitialStates({nodes: this.tree}, 0);
+		this.render();
+	}
+
+	Tree.prototype.upNode = function (tree, node) {
+		var _this = this;
+		tree.forEach(function (item, index) {
+			console.log(index)
+			if (node == null) {
+				return;
+			}
+			if (item.nodeId == node.nodeId) {
+				console.log("修改成功")
+				tree[index] = node;
+				node = null;
+				return;
+			}
+			if (item.nodes != null) {
+				_this.upNode(item.nodes, node)
 			}
 		})
 	}
