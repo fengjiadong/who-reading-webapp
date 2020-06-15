@@ -18,20 +18,22 @@ public class RoleService {
 	@Autowired
 	RoleMapper roleMapper;
 
-	public List<Role> allRole(){
+	public List<Role> allRole() {
 		return roleMapper.allRole();
 	}
-	public List<Role> allRoleByKey(String key){
-		return roleMapper.allRoleByKey("%"+key+"%");
+
+	public List<Role> allRoleByKey(String key) {
+		return roleMapper.allRoleByKey("%" + key + "%");
 	}
 
 	/**
 	 * 添加角色
+	 *
 	 * @param role
 	 * @return
 	 */
 	public Integer createRole(Role role) {
-		if(role.getId() == null || "".equals(role.getId().trim())){
+		if (role.getId() == null || "".equals(role.getId().trim())) {
 			role.setId(UUID.generateUUID());
 		}
 		return roleMapper.createRole(role);
@@ -39,6 +41,7 @@ public class RoleService {
 
 	/**
 	 * 修改角色
+	 *
 	 * @param role
 	 * @return
 	 */
@@ -47,12 +50,13 @@ public class RoleService {
 	}
 
 	/**
-	 * 移除菜单中的角色
+	 * 添加菜单中的角色
+	 *
 	 * @param menuId
 	 * @param roleId
 	 * @return
 	 */
-	public Integer menuAddRole(String menuId,String roleId) {
+	public Integer menuAddRole(String menuId, String roleId) {
 		return roleMapper.menuAddRole(menuId, roleId, UUID.generateUUID());
 	}
 }

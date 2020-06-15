@@ -169,7 +169,7 @@
 						</form>
 					</div>
 					<!--角色信息-->
-					<div role="tabpanel" class="tab-pane " id="roleInfo">
+					<div role="tabpanel" class="tab-pane" id="roleInfo">
 						<div class="form-group">
 							<div class="col-sm-8 col-sm-offset-1">
 								<select class="form-control" id="addRole">
@@ -196,6 +196,7 @@
 							</div>
 						</div>
 					</div>
+					<!--角色信息end-->
 				</div>
 				<!--end-->
 			</div>
@@ -243,7 +244,7 @@
 		allRole();
 	})
 
-	
+
 	function selectedNodeEvent(node) {
 		// 从数据库获取菜单数据，因为控件里面的菜单数据是经过修改的。
 		$.ajax({
@@ -287,7 +288,7 @@
 			}
 		})
 	}
-	
+
 	// 刷新菜单
 	function refreshMenu() {
 		selectedNode = undefined;
@@ -326,6 +327,8 @@
 		$("#createUp").modal('show');
 		$("#saveMenu").hide()
 		$("#addMenu").hide()
+		roleLists = [];
+		oldRoleLists = [];
 		if (type == 'add') {
 			$("#myModalLabel").html("新增菜单")
 			$("#addMenu").show(100)
@@ -343,6 +346,7 @@
 			var disabledArr = $("[name='disabled']")
 			disabledArr.eq(0).prop("checked", false);
 			disabledArr.eq(1).prop("checked", true);
+			$("#roles").html(''); // 清除角色
 		} else {
 			$("#myModalLabel").html("编辑菜单")
 			$("#saveMenu").show(100)
@@ -394,9 +398,15 @@
 					$("#createUp").modal('hide');
 					data.result.nodeId = selectedNode.nodeId
 					data.result.state.selected = true
+					data.result.parentName = selectedNode.parentName
 					$("#div_group").treeview("updateNode", data.result);
 					var select = $('#div_group').treeview('getSelected');
-					selectedNodeEvent(select)
+					console.log("select", select[0])
+					selectedNodeEvent(select[0])
+					// 添加角色
+					for (var i = 0; i < roleLists.length; i++) {
+						addRoleToService(data.result.id, roleLists[i]);
+					}
 				}
 			}
 		});
@@ -424,7 +434,6 @@
 			dataType: "json",
 			success: function (data) {
 				console.log(data)
-				// alert(data.msg)
 				if (data.code == "1") {
 					$("#createUp").modal('hide');
 					// var node = $('#div_group').treeview('getNode', selectedNode.nodeId);
@@ -434,6 +443,10 @@
 					]
 					console.log(ss)
 					$("#div_group").treeview("addNewNodes", ss);
+					// 添加角色
+					for (var i = 0; i < roleLists.length; i++) {
+						addRoleToService(data.result.id, roleLists[i]);
+					}
 					// refreshMenu();
 				} else {
 					alert(data.msg)
@@ -497,7 +510,7 @@
 	function getRolesByMenuId() {
 		// roles
 		if (selectedNode == undefined) {
-			alert("请选择要删除的菜单。")
+			alert("请选择菜单。")
 			return;
 		}
 		$.ajax({
@@ -505,12 +518,13 @@
 			type: "POST",
 			dataType: "json",
 			success: function (data) {
-				console.log(data)
 				$("#roles").html('');
 				if (data.code = "1") {
 					var roles = data.result;
 					for (var i = 0; i < roles.length; i++) {
-						$("#roles").append("<tr><td>" + roles[i].name + "</td><td>" + roles[i].displayName + "</td><td><input type='button' class='btn btn-default' value='移除' onclick=\"removeRoleShow('" + roles[i].id + "')\"></td></tr>")
+						// $("#roles").append("<tr><td>" + roles[i].name + "</td><td>" + roles[i].displayName + "</td><td><input type='button' class='btn btn-default' value='移除' onclick=\"removeRoleShow('" + roles[i].id + "')\"></td></tr>")
+						addShowRole(roles[i])
+						oldRoleLists.push(roles[i].id)
 					}
 				} else {
 					alert(data.msg)
@@ -518,6 +532,13 @@
 			}
 		});
 	}
+
+	// 传入role显示在上面
+	function addShowRole(roles) {
+		$("#roles").append("<tr><td>" + roles.name + "</td><td>" + roles.displayName + "</td><td><input type='button' class='btn btn-default' value='移除' onclick=\"removeRoleShow('" + roles.id + "')\"></td></tr>")
+	}
+
+	var infoRoles = [];
 
 	// 页面加载时获取所有的角色
 	function allRole() {
@@ -530,17 +551,38 @@
 				for (var i = 0; i < data.length; i++) {
 					// addRole
 					$("#addRole").append("<option value='" + data[i].id + "'>" + data[i].displayName + "</option>")
+					infoRoles.push(data[i])
 				}
 			}
 		});
 	}
 
+	var roleLists = []; // 临时存储菜单
+	var oldRoleLists = []; // 临时存储原有菜单
+
 	// 把角色添加到菜单中
 	function addRole() {
-		var param = {
-			menuId: selectedNode.id,
-			roleId: $("#addRole").val()
+		if (oldRoleLists.indexOf($("#addRole").val()) >= 0) {
+			return;
 		}
+		if (roleLists.indexOf($("#addRole").val()) >= 0) {
+			return;
+		}
+		roleLists.push($("#addRole").val());
+		for (var i = 0; i < infoRoles.length; i++) {
+			if (infoRoles[i].id == $("#addRole").val()) {
+				addShowRole(infoRoles[i])
+			}
+		}
+	}
+
+	// 把角色添加到数据库
+	function addRoleToService(menuId, roleId) {
+		var param = {
+			menuId: menuId,
+			roleId: roleId
+		}
+
 		$.ajax({
 			url: "/menu/menuAddRole",
 			type: "POST",
@@ -548,20 +590,21 @@
 			dataType: "json",
 			success: function (data) {
 				console.log(data)
-				getRolesByMenuId()
+				// getRolesByMenuId()
 			}
 		});
 	}
 
 	function moveUp() {
-		$("#div_group").treeview("moveNode", [selectedNode.nodeId,'up']);
+		$("#div_group").treeview("moveNode", [selectedNode.nodeId, 'up']);
 		var select = $('#div_group').treeview('getSelected');
 		console.log(select)
 		selectedNode = select[0];
 
 	}
+
 	function moveDown() {
-		$("#div_group").treeview("moveNode", [selectedNode.nodeId,'down']);
+		$("#div_group").treeview("moveNode", [selectedNode.nodeId, 'down']);
 		var select = $('#div_group').treeview('getSelected');
 		console.log(select)
 		selectedNode = select[0];
