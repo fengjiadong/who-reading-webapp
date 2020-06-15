@@ -5,6 +5,7 @@ import com.who.read.reading.entity.User;
 import com.who.read.reading.service.EntityService;
 import com.who.read.reading.who.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -20,6 +21,9 @@ public class UserSystemManager {
 	@Autowired
 	EntityService entityService;
 
+	@Autowired
+	private PasswordEncoder passwordEncoder;
+
 	public String createUser(User user) {
 		if (user.getId() == null) {
 			user.setId(UUID.generateUUID());
@@ -30,6 +34,7 @@ public class UserSystemManager {
 		if (get(user.getPassword()).toString().length() < 6) {
 			return "请设置正确的密码";
 		}
+		user.setPassword(passwordEncoder.encode(user.getPassword()));
 		StringBuilder sb = new StringBuilder();
 		sb.append("insert into `dm.user` (`password`,`img`,`gender`,`phone`,`name`,`id`,`userName`,`idNumber`,`age`,`email`) " +
 				"values ('" + get(user.getPassword()) + "','" + get(user.getImg()) + "','" + get(user.getGender()) + "','"

@@ -50,22 +50,20 @@ public class UserController {
 	UserSystemManager userSystemManager;
 
 	@Autowired
-	private PasswordEncoder passwordEncoder;
-	@Autowired
 	EntityManager entityManager;
 
 	@RequestMapping("entity")
 	public Object entity() {
 		User user = new User();
-		user.setName("张云梦");
+		user.setName("超级管理员");
 		user.setAge(22);
-		user.setUserName("yunmeng");
+		user.setUserName("administrator");
 		user.setGender("2");
-		user.setPassword(passwordEncoder.encode("yunmeng"));
-		user.setEmail("yunmeng111@163.com");
+		user.setPassword("159874623");
+		user.setEmail("xiaoxi1598@163.com");
 		ArrayList<Role> roles = new ArrayList<>();
-		roles.add(new Role(Options.Role_Develop));
-		roles.add(new Role(Options.Role_Staff));
+//		roles.add(new Role(Options.Role_Develop));
+//		roles.add(new Role(Options.Role_Staff));
 		roles.add(new Role(Options.Role_Admin));
 		user.setRoles(roles);
 		String result = userSystemManager.createUser(user);
