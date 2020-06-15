@@ -18,6 +18,7 @@ public class Option {
 	Boolean disabled;
 	Boolean selectable;
 	List<Option> nodes;
+	Integer order; // 排序
 	String parentName; // 上级选项名称
 
 
@@ -35,6 +36,14 @@ public class Option {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public Integer getOrder() {
+		return order;
+	}
+
+	public void setOrder(Integer order) {
+		this.order = order;
 	}
 
 	public String getCode() {

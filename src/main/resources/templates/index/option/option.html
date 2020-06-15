@@ -134,8 +134,8 @@
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
-				<button type="button" class="btn btn-primary" id="addMenu" onclick="addMenu()">保存</button>
-				<button type="button" class="btn btn-primary" id="saveMenu" onclick="saveMenu()">保存</button>
+				<button type="button" class="btn btn-primary" id="addMenu" onclick="addOption()">保存</button>
+				<button type="button" class="btn btn-primary" id="saveMenu" onclick="saveOption()">保存</button>
 			</div>
 		</div>
 	</div>
@@ -190,9 +190,21 @@
 			}
 		})
 	}
-
+	// 添加或删除的时候进行清空
+	function emptyAdd(){
+		$("#name").val('');
+		$("#code").val('');
+		$("#explain").val('');
+		var disabledArr = $("[name='disabled']")
+		disabledArr.eq(0).prop("checked", false);
+		disabledArr.eq(1).prop("checked", true);
+		var selectableArr = $("[name='selectable']")
+		selectableArr.eq(1).prop("checked", false);
+		selectableArr.eq(0).prop("checked", true);
+	}
 	// 显示新增或修改选项的窗口
 	function createUpShow(type) {
+		emptyAdd();
 		$("#createUp").modal('show');
 		$("#saveMenu").hide()
 		$("#addMenu").hide()
@@ -200,12 +212,7 @@
 			$("#myModalLabel").html("新增菜单")
 			$("#addMenu").show(100)
 			$("#parentName").val(selectedNode == undefined ? "无" : selectedNode.name);
-			var disabledArr = $("[name='disabled']")
-			disabledArr.eq(0).prop("checked", false);
-			disabledArr.eq(1).prop("checked", true);
-			var selectableArr = $("[name='selectable']")
-			selectableArr.eq(1).prop("checked", false);
-			selectableArr.eq(0).prop("checked", true);
+
 		}else {
 			$("#myModalLabel").html("编辑菜单")
 			$("#saveMenu").show(100)
@@ -225,6 +232,49 @@
 					disabledArr.eq(i).prop("checked", true);
 				}
 			}
+		}
+	}
+	// 添加一个选项
+	function addOption() {
+		console.log("selectedNode",selectedNode)
+		if(!$("#name").val()){
+			alert("选项名称不能等于空。")
+		}
+		var param = {
+			name: $("#name").val(),
+			code: $("#code").val(),
+			explain: $("#explain").val(),
+			parent: selectedNode == undefined ? "" : selectedNode.id,
+			disabled: $("[name='disabled']").eq(0).prop("checked"),
+			selectable: $("[name='selectable']").eq(0).prop("checked"),
+		}
+		$.ajax({
+			url: "/option/create",
+			type: "POST",
+			data: param,
+			dataType: "json",
+			success: function (data) {
+				if (data.code == "1") {
+					$("#createUp").modal('hide');
+					console.log(data)
+					var ss = [
+						selectedNode == undefined ? null : selectedNode.nodeId,
+						{nodes: data.result}
+					]
+					$("#div_group").treeview("addNewNodes", ss);
+					if(selectedNode != undefined ){
+						var selected = $("#div_group").treeview("getNodeById", selectedNode.id);
+						console.log("selected",selected)
+					}
+				}
+			}
+		})
+	}
+
+	// 清空一个选项
+	function saveOption() {
+		if(!$("#name").val()){
+			alert("选项名称不能等于空。")
 		}
 	}
 	function selected(e) {

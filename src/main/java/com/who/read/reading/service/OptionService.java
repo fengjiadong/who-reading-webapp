@@ -2,6 +2,7 @@ package com.who.read.reading.service;
 
 import com.who.read.reading.mapper.OptionMapper;
 import com.who.read.reading.who.datamodel.Option;
+import com.who.read.reading.who.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,7 +26,7 @@ public class OptionService {
 		return optionMapper.searchParentByParent(parent);
 	}
 
-	public Option getOption(String id) {
+	public Option getOptionById(String id) {
 		return optionMapper.getOption(id);
 	}
 
@@ -58,5 +59,19 @@ public class OptionService {
 			childrensMenu.setNodes(chidrens(childrensMenu));
 		}
 		return childrensMenus;
+	}
+
+	/**
+	 * 创建option方法
+	 * @param option
+	 * @return
+	 */
+	public Integer createOption(Option option) {
+		if (option.getId() == null || "".equals(option.getId().trim())) {
+			option.setId(UUID.generateUUID());
+		}
+		Integer count = optionMapper.countByParentId(option.getParent());
+		option.setOrder(count);
+		return optionMapper.createOption(option);
 	}
 }
