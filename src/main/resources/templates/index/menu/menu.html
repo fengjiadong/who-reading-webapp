@@ -22,6 +22,10 @@
 		</div>
 		<div class="col-lg-6">
 			<div id="show">
+				<h6>id：
+					<span id="idShow"></span>
+				</h6>
+				<hr>
 				<h6>上级菜单名称：
 					<span id="parentNameShow"></span>
 				</h6>
@@ -103,6 +107,13 @@
 				<div class="tab-content">
 					<div role="tabpanel" class="tab-pane active" id="menuInfo">
 						<form class="form-horizontal">
+							<div class="form-group">
+								<label for="id" class="col-sm-2 control-label">id</label>
+								<div class="col-sm-8">
+									<input id="id" type="text" class="form-control " disabled placeholder="无">
+								</div>
+							</div>
+
 							<div class="form-group">
 								<label for="parentName" class="col-sm-2 control-label">上级菜单</label>
 								<div class="col-sm-8">
@@ -256,6 +267,7 @@
 				if (data.code = '1') {
 					selectedNode = data.result
 					selectedNode.nodeId = node.nodeId
+					selectedNode.state = node.state
 					selectedNode.parentName = node.parentName ? node.parentName : "无"
 					$("#nameShow").html(selectedNode.name)
 					$("#actionShow").html(selectedNode.action)
@@ -265,6 +277,7 @@
 					$("#siteShow").html(selectedNode.site)
 					$("#explainShow").html(selectedNode.explain)
 					$("#icoShow").html(selectedNode.icon)
+					$("#idShow").html(selectedNode.id)
 					$("#parentNameShow").html(node.parentName ? node.parentName : "无")
 					$("#show").show(300)
 					// 找到菜单的可见角色
@@ -307,9 +320,6 @@
 					nodeIcon: "glyphicon glyphicon-asterisk",
 					onNodeSelected: function (event, node) {
 						selectedNodeEvent(node);
-
-						// $("#orderShow").html(node.order)
-
 					},
 					onNodeUnselected: function (event, node) {
 						selectedNode = undefined;
@@ -339,6 +349,7 @@
 			$("#action").val("");
 			$("#explain").val("");
 			$("#site").val("");
+			$("#id").val("创建后产生id.");
 			var validityArr = $("[name='validity']")
 			validityArr.eq(0).prop("checked", true);
 			validityArr.eq(1).prop("checked", false);
@@ -356,6 +367,7 @@
 			$("#action").val(selectedNode.action);
 			$("#explain").val(selectedNode.explain);
 			$("#site").val(selectedNode.site);
+			$("#id").val(selectedNode.id);
 			var validityArr = $("[name='validity']")
 			for (var i = 0; i < validityArr.length; i++) {
 				if (validityArr.eq(i).val() == (selectedNode.validity ? '1' : '0')) {
@@ -397,7 +409,7 @@
 				if (data.code = "1") {
 					$("#createUp").modal('hide');
 					data.result.nodeId = selectedNode.nodeId
-					data.result.state.selected = true
+					data.result.state = selectedNode.state
 					data.result.parentName = selectedNode.parentName
 					$("#div_group").treeview("updateNode", data.result);
 					var select = $('#div_group').treeview('getSelected');
@@ -634,8 +646,6 @@
 				}
 			}
 		});
-
-
 	}
 </script>
 
