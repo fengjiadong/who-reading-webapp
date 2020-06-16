@@ -319,8 +319,6 @@
 			// index nodes in a flattened structure for use later
 			_this.nodes.push(node);
 			_this.nodesCopy.push(node);
-			// console.log("添加:",node)
-			console.log("添加后:",_this.nodesCopy)
 			// recurse child nodes and transverse the tree
 			if (node.nodes) {
 				_this.setInitialStates(node, level);
@@ -729,7 +727,6 @@
 		if (id == undefined) {
 			return undefined
 		}
-		console.log(this.nodesCopy);
 		var item = undefined;
 		this.nodesCopy.forEach(function (value) {
 			if (value.id == id) {
@@ -1250,7 +1247,6 @@
 		this.setNewNodes(this.tree, identifiers, options.nodes)
 		this.nodesCopy.splice(0,this.nodesCopy.length);
 		this.nodes = []
-		console.log("给节点添加子节点后",this.nodesCopy)
 		this.setInitialStates({nodes: this.tree}, 0);
 		this.render();
 	};
@@ -1261,7 +1257,6 @@
 	Tree.prototype.setNewNodes = function (tree, identifiers, node) {
 		var _this = this;
 		if (identifiers == null) {
-			console.log("添加成功")
 			tree.push(node)
 			return
 		}
@@ -1270,7 +1265,6 @@
 				if (item.nodes == null) {
 					item.nodes = []
 				}
-				console.log("添加成功")
 				item.nodes.push(node)
 				return
 			}
@@ -1292,7 +1286,6 @@
 		tree.forEach(function (item, index) {
 			if (item.nodeId == nodeId) {
 				tree.splice(index, 1);
-				console.log("删除成功")
 				return
 			}
 			if (item.nodes != null) {
@@ -1345,7 +1338,6 @@
 				var tem = tree[index];
 				tree[index] = tree[index + 1];
 				tree[index + 1] = tem;
-				console.log("1")
 				return nodeId = null;
 			}
 			if (item.nodes != null) {
@@ -1358,7 +1350,6 @@
 	 * @param node
 	 */
 	Tree.prototype.updateNode = function (node) {
-		// console.log(node)
 		this.upNode(this.tree, node);
 		this.nodesCopy = []
 		this.setInitialStates({nodes: this.tree}, 0);
@@ -1368,12 +1359,10 @@
 	Tree.prototype.upNode = function (tree, node) {
 		var _this = this;
 		tree.forEach(function (item, index) {
-			console.log(index)
 			if (node == null) {
 				return;
 			}
 			if (item.nodeId == node.nodeId) {
-				console.log("修改成功")
 				tree[index] = node;
 				node = null;
 				return;
