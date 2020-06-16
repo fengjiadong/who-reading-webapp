@@ -67,4 +67,49 @@ public class OptionController {
 		}
 		return ServiceUtils.returnMapRestlt("-1", "新增失败！", "");
 	}
+
+
+	// 修改某个菜单
+	@PreAuthorize("hasAuthority('ROLE_" + Options.Role_Admin + "')")
+	@RequestMapping("/update")
+	public Object update(@PathParam("option") Option option) {
+		if (option.getId() == null || "".equals(option.getId().trim())) {
+			return ServiceUtils.returnMapRestlt("-1", "选项Id不能为空", "");
+		}
+		if (option.getName() == null || option.getName().trim().equals("")) {
+			return ServiceUtils.returnMapRestlt("-1", "选项名称不能为空！", "");
+		}
+		Integer result = optionService.updateOption(option);
+		if (result > 0) {
+			Option optionById = optionService.getOptionById(option.getId());
+			optionById.setSelectable(true);
+			return ServiceUtils.returnMapRestlt("1", "更新成功！", optionById);
+		}
+		return ServiceUtils.returnMapRestlt("1", "更新失败！", result);
+	}
+
+	// 删除一个菜单
+	@PreAuthorize("hasAuthority('ROLE_" + Options.Role_Admin + "')")
+	@RequestMapping("/delete/{id}")
+	public Object delete(@PathVariable("id") String id) {
+		if(id == null || "".equals(id.trim())){
+			return ServiceUtils.returnMapRestlt("-1", "请传入id.", "删除失败");
+		}
+		Integer result = optionService.deleteOption(id);
+		if (result > 0) {
+			return ServiceUtils.returnMapRestlt("1", "删除成功！", result);
+		}
+		return ServiceUtils.returnMapRestlt("-1", "删除失败！", result);
+	}
+
+	@RequestMapping("/move/{type}/{id}")
+	public Object move(@PathVariable("id") String id, @PathVariable("type") String type) {
+		Integer result = optionService.moveOption(id, type);
+		if (result > 0) {
+			return ServiceUtils.returnMapRestlt("1", "移动成功！", "");
+		} else {
+			return ServiceUtils.returnMapRestlt("1", "移动失败，菜单为null！", "");
+		}
+	}
+
 }

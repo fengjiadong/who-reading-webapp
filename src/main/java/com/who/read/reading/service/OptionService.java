@@ -1,6 +1,7 @@
 package com.who.read.reading.service;
 
 import com.who.read.reading.mapper.OptionMapper;
+import com.who.read.reading.who.datamodel.Menu;
 import com.who.read.reading.who.datamodel.Option;
 import com.who.read.reading.who.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,4 +75,54 @@ public class OptionService {
 		option.setOrder(count);
 		return optionMapper.createOption(option);
 	}
+
+	/**
+	 * 修改选项
+	 *
+	 * @param option
+	 * @return
+	 */
+	public Integer updateOption(Option option) {
+		return optionMapper.update(option);
+	}
+
+	/**
+	 * 删除选项
+	 * @param id
+	 * @return
+	 */
+	public Integer deleteOption(String id) {
+		return optionMapper.delete(id);
+	}
+
+	/**
+	 * 选项菜单位置
+	 *
+	 * @param id
+	 * @param type
+	 * @return
+	 */
+	public Integer moveOption(String id, String type) {
+		String parentId = optionMapper.getParentId(id);
+		Option option = optionMapper.getOption(id);
+		if (option != null) {
+			List<Option> exOptions = null;
+			Integer order = option.getOrder(); // order
+			if ("up".equals(type)) {
+				option.setOrder(option.getOrder() - 1);
+				exOptions = optionMapper.getOptionByLtOrderAndParentId(order, parentId,id);
+			} else {
+				option.setOrder(option.getOrder() + 1);
+				exOptions = optionMapper.getOptionByGtOrderAndParentId(order, parentId,id);
+			}
+			if (!exOptions.isEmpty()) {
+				Option exOption = exOptions.get(0);
+				optionMapper.updateOrder(exOption.getId(), order);
+			}
+			optionMapper.updateOrder(option.getId(), option.getOrder());
+			return 1;
+		}
+		return 0;
+	}
+
 }
