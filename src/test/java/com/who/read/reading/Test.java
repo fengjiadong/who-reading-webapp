@@ -1,5 +1,10 @@
 package com.who.read.reading;
 
+import com.who.read.reading.configuration.JsonManager;
+import com.who.read.reading.utils.HttpClient;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -9,6 +14,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @Classname Test
@@ -49,16 +56,21 @@ public class Test {
 	}
 
 	@org.junit.jupiter.api.Test
-	public void test() throws IOException {
-		String url = "http://www.biquge.info/55_55369/";
-		Document doc = Jsoup.connect(url).get();
-		Element intro = doc.getElementById("intro");
-		System.out.println("简介:"+intro.getElementsByTag("p").get(0).html());
-
-		Element fmimg = doc.getElementById("fmimg");
-		Elements img = fmimg.getElementsByTag("img");
-		String src = img.attr("src");
-		System.out.println("图片：" + src);
+	public void test() throws IOException, JSONException {
+		String url = "http://127.0.0.1:4399/rmtj/api/test/test3.jsp";
+		String s = HttpClient.doGet(url);
+		JSONArray jsonArray = new JSONArray(s.trim());
+		for (int i = 0; i < jsonArray.length(); i++) {
+			JSONObject jsonObject = jsonArray.getJSONObject(i);
+			System.out.print(JsonManager.getValue(jsonObject, "name"));
+			System.out.print(JsonManager.getValue(jsonObject, "age"));
+			System.out.print(JsonManager.getValue(jsonObject, "id"));
+			System.out.print(JsonManager.getValue(jsonObject, "username"));
+			System.out.println(JsonManager.getValue(jsonObject, "gender"));
+			System.out.println(JsonManager.getValue(jsonObject, "idNumber"));
+			System.out.println(JsonManager.getValue(jsonObject, "phone"));
+			System.out.println(JsonManager.getValue(jsonObject, "email"));
+		}
 	}
 
 	@org.junit.jupiter.api.Test

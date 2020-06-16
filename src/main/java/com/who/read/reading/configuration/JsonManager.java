@@ -156,4 +156,13 @@ public class JsonManager {
 			return null;
 		}
 	}
+
+	public static Object getValue(JSONObject json, String key) {
+		try {
+			return json.get(key);
+		} catch (Exception e) {
+			return "";
+		}
+
+	}
 }

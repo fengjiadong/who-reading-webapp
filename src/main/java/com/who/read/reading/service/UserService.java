@@ -72,6 +72,6 @@ public class UserService {
 		return userMapper.selectUserListCount();
 	}
 	public Integer queryUserByNameCount(String name) {
-		return userMapper.queryUserByNameCount(name);
+		return userMapper.queryUserByNameCount("%"+name+"%");
 	}
 }

@@ -5,19 +5,22 @@ import com.who.read.reading.entity.User;
 import com.who.read.reading.service.MenuService;
 import com.who.read.reading.service.RoleService;
 import com.who.read.reading.service.UserService;
+import com.who.read.reading.utils.HttpClient;
 import com.who.read.reading.utils.Options;
 import com.who.read.reading.who.datamodel.Entity;
 import com.who.read.reading.who.condition.EntityCondition;
 import com.who.read.reading.who.datamodel.Menu;
-import com.who.read.reading.who.datamodel.Option;
 import com.who.read.reading.who.manager.EntityManager;
+import com.who.read.reading.who.manager.UserSystemManager;
 import com.who.read.reading.who.util.UserSessionFactory;
+import org.json.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -151,6 +154,48 @@ public class WhoReadingController {
 
 	@RequestMapping("/option.html")
 	public String option(HttpServletRequest request) {
+		return "index/option/option";
+	}
+
+	@Autowired
+	UserSystemManager userSystemManager;
+
+	@RequestMapping("/work.html")
+	public String work(HttpServletRequest request) throws IOException {
+		String url = "http://127.0.0.1:4399/rmtj/api/test/test3.jsp";
+		String s = HttpClient.doGet(url);
+		JSONArray jsonArray = new JSONArray(s.trim());
+		for (int i = 0; i < jsonArray.length(); i++) {
+			try {
+//				JSONObject jsonObject = jsonArray.getJSONObject(i);
+//				Object name = JsonManager.getValue(jsonObject, "name");
+//				Object age = JsonManager.getValue(jsonObject, "age");
+//				Object id = JsonManager.getValue(jsonObject, "id");
+//				Object username = JsonManager.getValue(jsonObject, "username");
+//				Object gender = JsonManager.getValue(jsonObject, "gender");
+//				Object idNumber = JsonManager.getValue(jsonObject, "idNumber");
+//				Object phone = JsonManager.getValue(jsonObject, "phone");
+//				Object email = JsonManager.getValue(jsonObject, "email");
+//				User user = new User();
+//				user.setUserName(username.toString());
+//				user.setPassword(username.toString());
+//				user.setId(id.toString());
+//				user.setPhone(phone.toString());
+//				user.setEmail(email.toString());
+//				user.setIdNumber(idNumber.toString());
+//				user.setGender("Male".equals(gender.toString()) ? "1" : "2");
+//				user.setName(name.toString());
+//				user.setAge(Integer.parseInt(age.toString()));
+//				ArrayList<Role> roles = new ArrayList<>();
+//				roles.add(new Role(Options.Role_Staff));
+//				user.setRoles(roles);
+//				System.out.println(i+"--"+name + "--" + age);
+//				userSystemManager.createUser(user);
+			} catch (Exception e) {
+
+			}
+
+		}
 		return "index/option/option";
 	}
 
