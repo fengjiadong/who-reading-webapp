@@ -36,7 +36,6 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 	protected void configure(HttpSecurity http) throws Exception {
 		http.headers().frameOptions().disable();
 		http.formLogin() // 表单登录
-//				.loginPage("/login")       // 登录跳转url
 				.loginPage("/authentication/require")       // 登录跳转url
 				.loginProcessingUrl("/login")   // 处理表单登录url
 				.successHandler(authenticationSuccessHandler) // 自定义成功登录逻辑
@@ -51,6 +50,9 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 				.logoutUrl("/logout")
 				.logoutSuccessUrl("/login.html")
 				.deleteCookies("JSESSIONID")
+				.and()
+				.rememberMe()
+				.key("who")
 				// 都需要认证
 				.and().csrf().disable();
 	}

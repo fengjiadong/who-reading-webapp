@@ -49,16 +49,18 @@
 						</div>
 						<p class="error" id="errorMsg">密码错误</p>
 
-						<div class="checkbox">
-							<label>
-								<input type="checkbox">自动登录
-							</label>
-						</div>
+						<!--<div class="checkbox">-->
+							<!--<label>-->
+								<!--<input id="autoLogin" name="remember-me" type="checkbox">自动登录-->
+							<!--</label>-->
+						<!--</div>-->
+						<a href="#">忘记密码</a>
+						<br><br>
 						<div class="form-group">
 							<div id="valid"></div>
 						</div>
 						<hr>
-						<input type="submit" id="submit" class="btn btn-default btn-block" value="登录"
+						<input type="submit" id="submit" class="btn btn-default btn-block" value="登录" disabled
 							   data-loading-text="登录中"
 							   autocomplete="off">
 						<br>
@@ -67,9 +69,8 @@
 				</div>
 			</form>
 	</div>
-
 	<div class="row bottom navbar-fixed-bottom">
-		<hr>
+		<!--<hr>-->
 		<div class=" col-lg-12 ">
 			<h6 class="text-center"> 备案号：沪A3307SSOC@2020 - Who Dynamic modeling system</h6>
 		</div>
@@ -83,12 +84,21 @@
 		border-radius: 10px;
 		box-shadow: 2px 2px 5px #D9D9D9;
 	}
+	.bottom{
+		background-color: #FAFAFA;
+	}
 </style>
 <script>
-	var sliding_validation = SlidingValidation.create($('#valid'), {
+	SlidingValidation.create($('#valid'), {
 		slide_block_wrapper_width: 350
 	}, function () {
+		$("#submit").removeAttr("disabled")
 	});
+	$(function () {
+		console.log($("#autoLogin").prop("checked"))
+	})
+
+	// autoLogin
 	$("#login").submit(function () {
 		$("#submit").button('loading')
 
@@ -121,5 +131,7 @@
 
 		return false;
 	})
+
+
 </script>
 </html>

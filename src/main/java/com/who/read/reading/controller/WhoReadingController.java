@@ -141,7 +141,7 @@ public class WhoReadingController {
 		request.setAttribute("size", moduleList.size());
 		return "index/dm/dataModule";
 	}
-	@RequestMapping("/table.html")
+	@RequestMapping("/tableList.html")
 	public String table(HttpServletRequest request) {
 		String id = request.getParameter("id");
 		EntityCondition entityCondition = new EntityCondition("2a9634d1ca9bd8215bb62495f796bc12");
@@ -149,7 +149,7 @@ public class WhoReadingController {
 		List<Entity> tableList = entityManager.list(entityCondition);
 		request.setAttribute("tableList", tableList);
 		request.setAttribute("size", tableList.size());
-		return "index/dm/table";
+		return "index/dm/tableList";
 	}
 
 	@RequestMapping("/option.html")
