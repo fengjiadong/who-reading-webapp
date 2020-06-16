@@ -61,6 +61,7 @@ public class EntityManager {
 			String id1 = entity.getId();
 			properties.put("id", id1 == null ? UUID.generateUUID() : id1);
 		}
+		properties.put("typeId", entity.getTypeId());
 		Map<String, Object> entityInfo = entityService.entityInfo(entity.getTypeId());
 		StringBuilder sb = new StringBuilder();
 		StringBuilder values = new StringBuilder();
