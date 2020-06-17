@@ -444,7 +444,6 @@
 	};
 
 	Tree.prototype.setCheckedState = function (node, state, options) {
-
 		if (state === node.state.checked) return;
 
 		if (state) {
@@ -516,13 +515,13 @@
 	// Starting from the root node, and recursing down the
 	// structure we build the tree one node at a time
 	Tree.prototype.buildTree = function (nodes, level) {
-
+		// console.log("构建树形")
 		if (!nodes) return;
 		level += 1;
 
 		var _this = this;
 		$.each(nodes, function addNodes(id, node) {
-
+			// console.log("打开或关闭",node)
 			var treeItem = $(_this.template.item)
 				.addClass('node-' + _this.elementId)
 				.addClass(node.state.checked ? 'node-checked' : '')
@@ -533,6 +532,7 @@
 				.attr('style', _this.buildStyleOverride(node));
 
 			// Add indent/spacer to mimic tree structure
+
 			for (var i = 0; i < (level - 1); i++) {
 				treeItem.append(_this.template.indent);
 			}
@@ -1310,7 +1310,7 @@
 		tree.forEach(function (item, index) {
 			if (item.nodeId == nodeId) {
 				if (index == 0) {
-					console.log("已经是最上层，无法移动。")
+					// console.log("已经是最上层，无法移动。")
 					return;
 				}
 				var tem = tree[index];
@@ -1332,7 +1332,7 @@
 			if (item.nodeId == nodeId) {
 				// console.log(tree.length)
 				if ((index + 1) == tree.length) {
-					console.log("已经是最下层，无法移动。")
+					// console.log("已经是最下层，无法移动。")
 					return;
 				}
 				var tem = tree[index];
