@@ -1,6 +1,8 @@
 package com.who.read.reading.service;
 
 import com.who.read.reading.mapper.EntityMapper;
+import com.who.read.reading.utils.Options;
+import com.who.read.reading.who.datamodel.Columns;
 import com.who.read.reading.who.datamodel.Entity;
 import com.who.read.reading.who.condition.EntityCondition;
 import org.slf4j.Logger;
@@ -77,6 +79,15 @@ public class EntityService {
 
 	public Map<String, Object> entityInfo(String id) {
 		return entityMapper.entityInfo(id);
+	}
+
+	/**
+	 * 得到数据库表结构
+	 * @param table
+	 * @return
+	 */
+	public List<Columns> getColumnsList(String table) {
+		return entityMapper.getColumnsList(Options.Db_Name, table);
 	}
 
 

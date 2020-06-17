@@ -7,8 +7,10 @@ import com.who.read.reading.service.RoleService;
 import com.who.read.reading.service.UserService;
 import com.who.read.reading.utils.HttpClient;
 import com.who.read.reading.utils.Options;
+import com.who.read.reading.who.datamodel.Columns;
 import com.who.read.reading.who.datamodel.Entity;
 import com.who.read.reading.who.condition.EntityCondition;
+import com.who.read.reading.who.datamodel.Field;
 import com.who.read.reading.who.datamodel.Menu;
 import com.who.read.reading.who.manager.EntityManager;
 import com.who.read.reading.who.manager.UserSystemManager;
@@ -52,7 +54,6 @@ public class WhoReadingController {
 		return "login";
 	}
 
-	//	@PreAuthorize("hasAuthority('"+Options.Role_Admin +"')")
 	@RequestMapping("/index.html")
 	public String index(HttpServletRequest request) {
 		Boolean isAdmin = UserSessionFactory.currentUser().hasRole(Options.Role_Admin);
@@ -142,15 +143,28 @@ public class WhoReadingController {
 		return "index/dm/dataModule";
 	}
 	@RequestMapping("/tableList.html")
-	public String table(HttpServletRequest request) {
+	public String tableList(HttpServletRequest request) {
 		String id = request.getParameter("id");
-		EntityCondition entityCondition = new EntityCondition("2a9634d1ca9bd8215bb62495f796bc12");
+		EntityCondition entityCondition = new EntityCondition(Options.Type_Id);
 		entityCondition.setProperty("module", id);
 		List<Entity> tableList = entityManager.list(entityCondition);
 		request.setAttribute("tableList", tableList);
 		request.setAttribute("size", tableList.size());
 		return "index/dm/tableList";
 	}
+
+	@RequestMapping("/table.html")
+	public String table(HttpServletRequest request) {
+		String typeId = request.getParameter("id");
+		Entity entity = entityManager.getEntity(typeId, Options.Type_Id);
+		List<Field> fields = entityManager.getColumnsList(entity.getProperty("name", String.class), typeId);
+		request.setAttribute("fieldList", fields);
+		request.setAttribute("size", fields.size());
+		return "index/dm/table";
+	}
+
+
+
 
 	@RequestMapping("/option.html")
 	public String option(HttpServletRequest request) {

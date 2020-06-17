@@ -5,12 +5,15 @@ import com.who.read.reading.who.condition.Expression;
 import com.who.read.reading.who.condition.FieldExpression;
 import com.who.read.reading.who.condition.NestedExpression;
 import com.who.read.reading.who.condition.Operator;
+import com.who.read.reading.who.datamodel.Columns;
 import com.who.read.reading.who.datamodel.Entity;
 import com.who.read.reading.who.condition.EntityCondition;
+import com.who.read.reading.who.datamodel.Field;
 import com.who.read.reading.who.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -45,6 +48,72 @@ public class EntityManager {
 		EntityCondition entityCondition = new EntityCondition(typeId);
 		entityCondition.setId(id);
 		return getEntity(entityCondition);
+	}
+
+	/**
+	 * 得到数据库表结构
+	 *
+	 * @param table 表明
+	 * @return
+	 */
+	public List<Columns> getColumnsList(String table) {
+		return entityService.getColumnsList(table);
+	}
+
+	/**
+	 * 得到数据库表结构 按typeId查询
+	 *
+	 * @param table 表明
+	 * @return
+	 */
+	public List<Field> getColumnsList(String table, String typeId) {
+		List<Columns> columnsList = entityService.getColumnsList(table);
+		ArrayList<Field> fields = new ArrayList<>();
+		for (Columns columns : columnsList) {
+			try {
+				Field field = new Field();
+				String column_comment = columns.getColumn_comment();
+				String[] split = column_comment.split("-#-");
+				for (String var : split) {
+					setFiled(field, var);
+				}
+				if (typeId.equals(field.getTypeId()) || field.getName().equals("id")) {
+					fields.add(field);
+				}
+			} catch (Exception e) {
+			}
+		}
+		return fields;
+	}
+
+	public void setFiled(Field filed, String var) {
+		String content = var.substring(var.indexOf("#") + 1, var.lastIndexOf("#"));
+		int i = content.indexOf(":");
+		if (i < 0) {
+			return;
+		}
+		String key = content.substring(0, i);
+		String value = content.substring(i + 1);
+		switch (key) {
+			case "name":
+				filed.setName(value);
+				break;
+			case "schema":
+				filed.setSchema(value);
+				return;
+			case "displayAs":
+				filed.setDisplayAs(value);
+				return;
+			case "describe":
+				filed.setDescription(value);
+				return;
+			case "type":
+				filed.setType(value);
+				return;
+			case "typeId":
+				filed.setTypeId(value);
+				return;
+		}
 	}
 
 
@@ -148,6 +217,7 @@ public class EntityManager {
 
 	/**
 	 * 组合条件
+	 *
 	 * @param expression
 	 * @return
 	 */
@@ -161,10 +231,10 @@ public class EntityManager {
 		while (iterator.hasNext()) {
 			Expression expre = iterator.next();
 			String sql = fieldNestedToSql(expre);
-			nestSql.append( sql);
+			nestSql.append(sql);
 			if (iterator.hasNext()) {
 				nestSql.append(" " + operator.name() + " ");
-			}else{
+			} else {
 				nestSql.append(")");
 			}
 		}
@@ -173,6 +243,7 @@ public class EntityManager {
 
 	/**
 	 * 字段条件
+	 *
 	 * @param expression
 	 * @return
 	 */
@@ -199,16 +270,16 @@ public class EntityManager {
 		} else {
 			return " 1 = 1";
 		}
-		return "("+sbSql.toString()+")";
+		return "(" + sbSql.toString() + ")";
 	}
 
 	public String listToString(Object value) {
 		StringBuilder sb = new StringBuilder();
 		sb.append("'@#@$%&^%$*'");
-		if(value instanceof List){
+		if (value instanceof List) {
 			List values = (List) value;
 			for (Object o : values) {
-				sb.append(",'" + o+"'");
+				sb.append(",'" + o + "'");
 			}
 		} else if (value instanceof Object[]) {
 			Object[] values = (Object[]) value;

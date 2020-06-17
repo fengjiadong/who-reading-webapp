@@ -24,20 +24,26 @@
 	<table class="table table-hover">
 		<tr>
 			<!--<th>id</th>-->
-			<th>显示名称</th>
-			<th>模块名称</th>
-			<th>模块描述</th>
-			<th>是否系统模块</th>
+			<!--<th>所属库</th>-->
+			<!--<th>所属表</th>-->
+			<th>字段名</th>
+			<th>字段显示名</th>
+			<th>字段类型</th>
+			<th>schema</th>
+			<th>描述</th>
+			<th>格式</th>
+
 		</tr>
 		<tr th:if="${size} < 1">
-			<td colspan="5" class="text-center">暂无数据</td>
+			<td colspan="6" class="text-center">暂无数据</td>
 		</tr>
-		<tr name="module" class="" th:each="table : ${tableList}" th:id="${table.properties.id}" th:namea="${table.properties.name}"  th:displayName="${table.properties.displayName}" ondblclick="dblclick(this)" onclick="selected(this)">
-			<!--<td><p th:text="${table.properties.id}"></p></td>-->
-			<td><p th:text="${table.properties.name}"></p></td>
-			<td><p th:text="${table.properties.displayName}"></p></td>
-			<td><p th:text="${table.properties.describe}"></p></td>
-			<td><p th:text="${table.properties.isSys} == '1'?'是':'否'"></p></td>
+		<tr name="module" class="" th:each="field : ${fieldList}"  ondblclick="dblclick(this)" onclick="selected(this)">
+			<td><p th:text="${field.name}"></p></td>
+			<td><p th:text="${field.displayAs}"></p></td>
+			<td><p th:text="${field.type}"></p></td>
+			<td><p th:text="${field.schema}"></p></td>
+			<td><p th:text="${field.description}"></p></td>
+			<td><p th:text="${field.format}"></p></td>
 		</tr>
 	</table>
 	<hr>
@@ -51,8 +57,8 @@
 	// dblclick
 	function dblclick(e) {
 		// $(e).attr('id') 启动编辑
-		parent.getDmTable($(e).attr('id'),$(e).attr('namea'),$(e).attr('displayName'))
-		console.log()
+		// parent.getDm($(e).attr('id'),$(e).attr('name'),$(e).attr('displayName'))
+		// console.log()
 	}
 
 	function selected(e) {
