@@ -157,7 +157,7 @@ public class WhoReadingController {
 	public String table(HttpServletRequest request) {
 		String typeId = request.getParameter("id");
 		Entity entity = entityManager.getEntity(typeId, Options.Type_Id);
-		List<Field> fields = entityManager.getColumnsList(entity.getProperty("name", String.class), typeId);
+		List<Field> fields = entityManager.getFields(entity.getProperty("name", String.class), typeId);
 		request.setAttribute("fieldList", fields);
 		request.setAttribute("size", fields.size());
 		return "index/dm/table";

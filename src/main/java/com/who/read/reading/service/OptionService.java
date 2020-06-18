@@ -30,6 +30,9 @@ public class OptionService {
 	public Option getOptionById(String id) {
 		return optionMapper.getOption(id);
 	}
+	public String getOptionName(String id) {
+		return optionMapper.getOptionName(id);
+	}
 
 	/**
 	 * 拿到所有选项，所有选项的selectable全都默认为true;

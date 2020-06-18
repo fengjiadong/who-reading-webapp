@@ -90,5 +90,9 @@ public class EntityService {
 		return entityMapper.getColumnsList(Options.Db_Name, table);
 	}
 
+	public Columns getColumnById(String id) {
+		return entityMapper.getColumnById(Options.Db_Name, "%"+id+"%");
+	}
+
 
 }

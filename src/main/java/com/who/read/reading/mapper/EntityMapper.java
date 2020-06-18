@@ -35,5 +35,8 @@ public interface EntityMapper {
 			" from information_schema.columns where table_schema=#{dbName} and table_name=#{table};")
 	List<Columns> getColumnsList(@Param(value = "dbName") String dbName,@Param(value = "table") String table);
 
+	@Select("select table_schema,table_name,column_name,column_type,column_key,is_nullable,column_default,column_comment,character_set_name,character_maximum_length" +
+			" from information_schema.columns where table_schema=#{dbName} and column_comment like #{id}")
+	Columns getColumnById(@Param(value = "dbName") String dbName, @Param(value = "id") String id);
 
 }

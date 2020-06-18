@@ -7,32 +7,39 @@ package com.who.read.reading.who.datamodel;
  */
 public class Field {
 
-	String id;
+	private String id;
 
-	Field parent;
+	private Field parent;
 
-	String type; // 字段类型
+	private String type; // 字段类型
 
-	String typeId; //字段所属typeId
+	private String typeId; //字段所属typeId
 
-	String name;
+	private String name;
 
-	String display;
+	private String display;
 
-	String displayAs;
+	private String displayAs;
 
-	String description;
+	private String description;
 
-	String schema;
+	private String schema;
 
-	String format;
+	private String schemaAs;
+
+	private String format;
+
+	private Integer length;
 
 
-	Integer index;
+	private Integer index;
 
-	boolean isSystem;
+	private boolean isSystem;
 
-	boolean isArray;
+	private boolean isArray;
+
+
+	private String defaultValue;
 
 
 	public String getId() {
@@ -137,5 +144,29 @@ public class Field {
 
 	public void setTypeId(String typeId) {
 		this.typeId = typeId;
+	}
+
+	public String getSchemaAs() {
+		return schemaAs;
+	}
+
+	public void setSchemaAs(String schemaAs) {
+		this.schemaAs = schemaAs;
+	}
+
+	public Integer getLength() {
+		return length;
+	}
+
+	public void setLength(Integer length) {
+		this.length = length;
+	}
+
+	public String getDefaultValue() {
+		return defaultValue;
+	}
+
+	public void setDefaultValue(String defaultValue) {
+		this.defaultValue = defaultValue;
 	}
 }

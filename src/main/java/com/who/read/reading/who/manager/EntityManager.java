@@ -1,6 +1,8 @@
 package com.who.read.reading.who.manager;
 
+import com.who.read.reading.configuration.ErrorConfigurar;
 import com.who.read.reading.service.EntityService;
+import com.who.read.reading.service.OptionService;
 import com.who.read.reading.who.condition.Expression;
 import com.who.read.reading.who.condition.FieldExpression;
 import com.who.read.reading.who.condition.NestedExpression;
@@ -9,9 +11,13 @@ import com.who.read.reading.who.datamodel.Columns;
 import com.who.read.reading.who.datamodel.Entity;
 import com.who.read.reading.who.condition.EntityCondition;
 import com.who.read.reading.who.datamodel.Field;
+import com.who.read.reading.who.datamodel.Option;
 import com.who.read.reading.who.util.UUID;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -25,8 +31,13 @@ import java.util.Map;
  */
 @Component
 public class EntityManager {
+	private static final Logger LOGGER = LoggerFactory.getLogger(EntityManager.class);
+
 	@Autowired
 	EntityService entityService;
+
+	@Autowired
+	OptionService optionService;
 
 	public List<Entity> list(EntityCondition entityCondition) {
 		initSql(entityCondition);
@@ -45,6 +56,7 @@ public class EntityManager {
 	}
 
 	public Entity getEntity(String id, String typeId) {
+		LOGGER.info("getEntity(" + id + "," + typeId + ")");
 		EntityCondition entityCondition = new EntityCondition(typeId);
 		entityCondition.setId(id);
 		return getEntity(entityCondition);
@@ -57,8 +69,29 @@ public class EntityManager {
 	 * @return
 	 */
 	public List<Columns> getColumnsList(String table) {
+		LOGGER.info("getColumnsList(" + table + ")");
 		return entityService.getColumnsList(table);
 	}
+
+	public Field getFiledById(String id) {
+		LOGGER.info("getFiledById(" + id + "");
+		Columns columns = entityService.getColumnById(id);
+		try {
+			Field field = new Field();
+			String column_comment = columns.getColumn_comment();
+			String[] split = column_comment.split("-#-");
+			for (String var : split) {
+				setFiled(field, var);
+			}
+			field.setDefaultValue(columns.getColumn_default());
+			field.setLength(columns.getCharacter_maximum_length());
+			return field;
+		} catch (Exception e) {
+			LOGGER.info("getFiledById(" + id + "):FieldNullError", e.getLocalizedMessage());
+			return null;
+		}
+	}
+
 
 	/**
 	 * 得到数据库表结构 按typeId查询
@@ -66,7 +99,7 @@ public class EntityManager {
 	 * @param table 表明
 	 * @return
 	 */
-	public List<Field> getColumnsList(String table, String typeId) {
+	public List<Field> getFields(String table, String typeId) {
 		List<Columns> columnsList = entityService.getColumnsList(table);
 		ArrayList<Field> fields = new ArrayList<>();
 		for (Columns columns : columnsList) {
@@ -77,10 +110,11 @@ public class EntityManager {
 				for (String var : split) {
 					setFiled(field, var);
 				}
-				if (typeId.equals(field.getTypeId()) || field.getName().equals("id")) {
+				if (typeId.equals(field.getTypeId()) || field.getName().equals("id") || field.getName().equals("parent")) {
 					fields.add(field);
 				}
 			} catch (Exception e) {
+				LOGGER.info("getFields(" + table + "," + typeId + ")" + ":Error", e.getLocalizedMessage());
 			}
 		}
 		return fields;
@@ -100,6 +134,7 @@ public class EntityManager {
 				break;
 			case "schema":
 				filed.setSchema(value);
+				setSchema(filed);
 				return;
 			case "displayAs":
 				filed.setDisplayAs(value);
@@ -112,6 +147,37 @@ public class EntityManager {
 				return;
 			case "typeId":
 				filed.setTypeId(value);
+				return;
+			case "id":
+				filed.setId(value);
+				return;
+		}
+	}
+
+	/**
+	 * 查询字段的时候 获取schema的所对应的值
+	 *
+	 * @param filed
+	 */
+	public void setSchema(Field filed) {
+		String type = filed.getType();
+		String schema = filed.getSchema();
+		if (StringUtils.isEmpty(type) || StringUtils.isEmpty(schema)) {
+			return;
+		}
+		switch (type) {
+			case "option":
+				// 引用类型
+				filed.setSchemaAs(optionService.getOptionName(schema));
+				return;
+			case "reference":
+				// 引用
+				return;
+			case "data":
+				// 日期类型时间格式
+				return;
+			case "redundant":
+				// 冗余
 				return;
 		}
 	}

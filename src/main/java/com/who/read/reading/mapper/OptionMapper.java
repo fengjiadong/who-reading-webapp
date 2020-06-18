@@ -10,6 +10,7 @@ import org.apache.ibatis.annotations.Update;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Classname OptionMapper
@@ -62,4 +63,8 @@ public interface OptionMapper {
 	// 查询菜单的parentId
 	@Select("SELECT `parent` FROM `dm.option` where `id` = #{id}")
 	String getParentId(@Param(value = "id") String id);
+
+
+	@Select("SELECT `name` FROM `dm.option` where `id` = #{id}")
+	String getOptionName(@Param("id") String id);
 }

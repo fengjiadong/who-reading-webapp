@@ -37,11 +37,12 @@
 		<tr th:if="${size} < 1">
 			<td colspan="6" class="text-center">暂无数据</td>
 		</tr>
-		<tr name="module" class="" th:each="field : ${fieldList}"  ondblclick="dblclick(this)" onclick="selected(this)">
+		<tr name="module" class="" th:each="field : ${fieldList}" th:id="${field.id}" ondblclick="dblclick(this)"
+			onclick="selected(this)">
 			<td><p th:text="${field.name}"></p></td>
 			<td><p th:text="${field.displayAs}"></p></td>
 			<td><p th:text="${field.type}"></p></td>
-			<td><p th:text="${field.schema}"></p></td>
+			<td><p th:text="${field.schemaAs}"></p></td>
 			<td><p th:text="${field.description}"></p></td>
 			<td><p th:text="${field.format}"></p></td>
 		</tr>
@@ -53,12 +54,106 @@
 		</div>
 	</div>
 </div>
+<!-- 模态框（Modal）-->
+<div class="modal fade bs-example-modal-lg" id="createUp" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+	 data-backdrop="false"
+	 aria-hidden="false">
+	<div class="modal-dialog modal-md">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+				<p class="modal-title" id="myModalLabel">编辑字段</p>
+			</div>
+			<div class="modal-body">
+				<div class="tab-content">
+					<div role="tabpanel" class="tab-pane active" id="menuInfo">
+						<form class="form-horizontal">
+							<div class="form-group">
+								<label for="p_name" class="col-sm-2 control-label">内部名称</label>
+								<div class="col-sm-8">
+									<input id="p_name" type="text" class="form-control " disabled>
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="p_displayAs" class="col-sm-2 control-label">外部名称</label>
+								<div class="col-sm-8">
+									<input id="p_displayAs" type="text" class="form-control">
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="p_type" class="col-sm-2 control-label">数据类型</label>
+								<div class="col-sm-8">
+									<input id="p_type" type="text" class="form-control">
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="p_schema" class="col-sm-2 control-label">schema</label>
+								<div class="col-sm-8">
+									<input id="p_schema" type="text" class="form-control">
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="p_format" class="col-sm-2 control-label">格式设置</label>
+								<div class="col-sm-8">
+									<input id="p_format" type="text" class="form-control">
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="p_description" class="col-sm-2 control-label">描述</label>
+								<div class="col-sm-8">
+									<input id="p_description" type="text" class="form-control">
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="p_length" class="col-sm-2 control-label">长度</label>
+								<div class="col-sm-8">
+									<input id="p_length" type="text" class="form-control">
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="p_defaultValue" class="col-sm-2 control-label">默认值</label>
+								<div class="col-sm-8">
+									<input id="p_defaultValue" type="text" class="form-control">
+								</div>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
 <script>
+	// 显示新增或修改菜单的窗口
+	function createUpShow(type) {
+
+	}
+
 	// dblclick
 	function dblclick(e) {
-		// $(e).attr('id') 启动编辑
-		// parent.getDm($(e).attr('id'),$(e).attr('name'),$(e).attr('displayName'))
-		// console.log()
+
+		$.ajax({
+			url: "/sys/getField/" + $(e).attr('id'),
+			type: "POST",
+			dataType: "json",
+			success: function (data) {
+				console.log(data)
+				if (data.code = "1") {
+					var field = data.result;
+					$("#p_name").val(field.name);
+					$("#p_displayAs").val(field.displayAs);
+					$("#p_type").val(field.type);
+					$("#p_format").val(field.format);
+					$("#p_schema").val(field.schemaAs);
+					$("#p_description").val(field.description);
+					$("#p_length").val(field.length);
+					$("#p_defaultValue").val(field.defaultValue);
+					$("#createUp").modal('show'); // 显示窗口
+				} else {
+					alert(data.msg)
+				}
+			}
+		});
 	}
 
 	function selected(e) {

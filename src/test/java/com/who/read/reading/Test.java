@@ -2,6 +2,7 @@ package com.who.read.reading;
 
 import com.who.read.reading.configuration.JsonManager;
 import com.who.read.reading.utils.HttpClient;
+import com.who.read.reading.who.util.UUID;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -23,6 +24,13 @@ import java.util.Map;
  * @Created by fengjiadong
  */
 public class Test {
+	@org.junit.jupiter.api.Test
+	public void uuid(){
+		for (int i = 0; i < 10; i++) {
+			System.out.println("(#id:"+UUID.generateUUID()+"#)-#-");
+		}
+	}
+
 	public static void main(String[] args) throws IOException {
 		Document doc = Jsoup.connect("http://www.biquge.info/list/3_1.html").get();
 		Element newscontent = doc.getElementById("newscontent");
