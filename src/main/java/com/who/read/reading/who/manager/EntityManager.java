@@ -62,125 +62,7 @@ public class EntityManager {
 		return getEntity(entityCondition);
 	}
 
-	/**
-	 * 得到数据库表结构
-	 *
-	 * @param table 表明
-	 * @return
-	 */
-	public List<Columns> getColumnsList(String table) {
-		LOGGER.info("getColumnsList(" + table + ")");
-		return entityService.getColumnsList(table);
-	}
 
-	public Field getFiledById(String id) {
-		LOGGER.info("getFiledById(" + id + "");
-		Columns columns = entityService.getColumnById(id);
-		try {
-			Field field = new Field();
-			String column_comment = columns.getColumn_comment();
-			String[] split = column_comment.split("-#-");
-			for (String var : split) {
-				setFiled(field, var);
-			}
-			field.setDefaultValue(columns.getColumn_default());
-			field.setLength(columns.getCharacter_maximum_length());
-			return field;
-		} catch (Exception e) {
-			LOGGER.info("getFiledById(" + id + "):FieldNullError", e.getLocalizedMessage());
-			return null;
-		}
-	}
-
-
-	/**
-	 * 得到数据库表结构 按typeId查询
-	 *
-	 * @param table 表明
-	 * @return
-	 */
-	public List<Field> getFields(String table, String typeId) {
-		List<Columns> columnsList = entityService.getColumnsList(table);
-		ArrayList<Field> fields = new ArrayList<>();
-		for (Columns columns : columnsList) {
-			try {
-				Field field = new Field();
-				String column_comment = columns.getColumn_comment();
-				String[] split = column_comment.split("-#-");
-				for (String var : split) {
-					setFiled(field, var);
-				}
-				if (typeId.equals(field.getTypeId()) || field.getName().equals("id") || field.getName().equals("parent")) {
-					fields.add(field);
-				}
-			} catch (Exception e) {
-				LOGGER.info("getFields(" + table + "," + typeId + ")" + ":Error", e.getLocalizedMessage());
-			}
-		}
-		return fields;
-	}
-
-	public void setFiled(Field filed, String var) {
-		String content = var.substring(var.indexOf("#") + 1, var.lastIndexOf("#"));
-		int i = content.indexOf(":");
-		if (i < 0) {
-			return;
-		}
-		String key = content.substring(0, i);
-		String value = content.substring(i + 1);
-		switch (key) {
-			case "name":
-				filed.setName(value);
-				break;
-			case "schema":
-				filed.setSchema(value);
-				setSchema(filed);
-				return;
-			case "displayAs":
-				filed.setDisplayAs(value);
-				return;
-			case "describe":
-				filed.setDescription(value);
-				return;
-			case "type":
-				filed.setType(value);
-				return;
-			case "typeId":
-				filed.setTypeId(value);
-				return;
-			case "id":
-				filed.setId(value);
-				return;
-		}
-	}
-
-	/**
-	 * 查询字段的时候 获取schema的所对应的值
-	 *
-	 * @param filed
-	 */
-	public void setSchema(Field filed) {
-		String type = filed.getType();
-		String schema = filed.getSchema();
-		if (StringUtils.isEmpty(type) || StringUtils.isEmpty(schema)) {
-			return;
-		}
-		switch (type) {
-			case "option":
-				// 引用类型
-				filed.setSchemaAs(optionService.getOptionName(schema));
-				return;
-			case "reference":
-				// 引用
-				return;
-			case "data":
-				// 日期类型时间格式
-				return;
-			case "redundant":
-				// 冗余
-				return;
-		}
-	}
 
 
 	/**
@@ -354,6 +236,5 @@ public class EntityManager {
 			}
 		}
 		return "(" + sb.toString() + ")";
-
 	}
 }

@@ -83,7 +83,9 @@
 							<div class="form-group">
 								<label for="p_type" class="col-sm-2 control-label">数据类型</label>
 								<div class="col-sm-8">
-									<input id="p_type" type="text" class="form-control">
+									<select name="p_type" class="form-control" id="p_type">
+										<option value=""></option>
+									</select>
 								</div>
 							</div>
 							<div class="form-group">
@@ -92,10 +94,12 @@
 									<input id="p_schema" type="text" class="form-control">
 								</div>
 							</div>
-							<div class="form-group">
+							<div class="form-group" id="_p_format">
 								<label for="p_format" class="col-sm-2 control-label">格式设置</label>
 								<div class="col-sm-8">
-									<input id="p_format" type="text" class="form-control">
+									<!--<input id="p_format" type="text" class="form-control">-->
+									<select name="p_format" class="form-control" id="p_format">
+									</select>
 								</div>
 							</div>
 							<div class="form-group">
@@ -128,6 +132,21 @@
 	function createUpShow(type) {
 
 	}
+	// 初始化页面
+	$(function () {
+		$('#_p_format').hide()
+		$("#p_type").change(function () {
+			var type =  $(this).val()
+			if(type == 'date'){
+				dateFormats()
+			}else{
+				$('#_p_format').hide(50) // 隐藏日期格式字段
+			}
+		})
+	})
+
+
+
 
 	// dblclick
 	function dblclick(e) {
@@ -148,18 +167,64 @@
 					$("#p_description").val(field.description);
 					$("#p_length").val(field.length);
 					$("#p_defaultValue").val(field.defaultValue);
+					$("#p_format").val(field.format);
 					$("#createUp").modal('show'); // 显示窗口
+					types(field.type,field.format)
 				} else {
 					alert(data.msg)
 				}
 			}
 		});
 	}
-
+	// 选中
 	function selected(e) {
 		$("[name='module']").removeClass("info");
 		$(e).addClass('info')
 
+	}
+	// 加载日期格式
+	function dateFormats(format) {
+		$.ajax({
+			url: "/sys/dateFormats",
+			type: "POST",
+			dataType: "json",
+			success: function (data) {
+				$('#_p_format').show(50) // 显示日期格式字段
+				$('#p_format').html("")
+				for (var i = 0; i < data.length; i++) {
+					if(format == data[i].key){
+						$('#p_format').append("<option  selected value='"+data[i].key+"' >"+data[i].value+"</option>");
+					}else{
+						$('#p_format').append("<option value='"+data[i].key+"' >"+data[i].value+"</option>");
+					}
+				}
+
+			}
+		});
+	}
+	// 加载Type
+	function types(type,format) {
+		type = type == undefined ? '' : type;
+		$.ajax({
+			url: "/sys/types",
+			type: "POST",
+			dataType: "json",
+			success: function (data) {
+				$('#p_type').html("")
+				for (var i = 0; i < data.length; i++) {
+					if(type == data[i].key){
+						$('#p_type').append("<option selected  value='"+data[i].key+"' >"+data[i].value+"</option>");
+					}else{
+						$('#p_type').append("<option  value='"+data[i].key+"' >"+data[i].value+"</option>");
+					}
+					if(type === 'date'){
+						dateFormats(format)
+					}
+
+				}
+
+			}
+		});
 	}
 </script>
 </body>

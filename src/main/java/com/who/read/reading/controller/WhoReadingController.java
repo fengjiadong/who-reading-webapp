@@ -13,6 +13,7 @@ import com.who.read.reading.who.condition.EntityCondition;
 import com.who.read.reading.who.datamodel.Field;
 import com.who.read.reading.who.datamodel.Menu;
 import com.who.read.reading.who.manager.EntityManager;
+import com.who.read.reading.who.manager.SystemManager;
 import com.who.read.reading.who.manager.UserSystemManager;
 import com.who.read.reading.who.util.UserSessionFactory;
 import org.json.JSONArray;
@@ -46,6 +47,9 @@ public class WhoReadingController {
 
 	@Autowired
 	private EntityManager entityManager;
+
+	@Autowired
+	private SystemManager systemManager;
 
 
 
@@ -157,7 +161,7 @@ public class WhoReadingController {
 	public String table(HttpServletRequest request) {
 		String typeId = request.getParameter("id");
 		Entity entity = entityManager.getEntity(typeId, Options.Type_Id);
-		List<Field> fields = entityManager.getFields(entity.getProperty("name", String.class), typeId);
+		List<Field> fields = systemManager.getFields(entity.getProperty("name", String.class), typeId);
 		request.setAttribute("fieldList", fields);
 		request.setAttribute("size", fields.size());
 		return "index/dm/table";
