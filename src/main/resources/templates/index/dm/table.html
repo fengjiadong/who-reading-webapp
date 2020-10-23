@@ -11,46 +11,78 @@
 </head>
 <body>
 <div class="container-fluid">
-	<br>
 	<div class="row">
-		<div class="col-lg-4 col-sm-12 col-md-8">
-			<input type="button" value="新增" class="btn btn-default">
-			<input type="button" value="编辑" class="btn btn-default">
-			<input type="button" value="删除" class="btn btn-default">
-			<input type="button" value="刷新" class="btn btn-default">
-		</div>
+		<h4 >
+			&nbsp;&nbsp;&nbsp;&nbsp;
+			<span th:text="${entity.displayName}+'  '+${entity.name}"></span>
+			&nbsp;&nbsp;
+			<span th:text="'('+${entity.id}+')'"></span>
+		</h4>
+		<hr>
 	</div>
-	<br>
-	<table class="table table-hover">
-		<tr>
-			<!--<th>id</th>-->
-			<!--<th>所属库</th>-->
-			<!--<th>所属表</th>-->
-			<th>字段名</th>
-			<th>字段显示名</th>
-			<th>字段类型</th>
-			<th>schema</th>
-			<th>描述</th>
-			<th>格式</th>
+	<!--菜单-->
+	<ul class="nav nav-tabs" role="tablist">
+		<li role="presentation" class="active">
+			<a href="#fieldInfo" aria-controls="fieldInfo" role="tab" data-toggle="tab">字段信息</a>
+		</li>
+		<li role="presentation" class="">
+			<a href="#businessInfo" aria-controls="businessInfo" role="tab" data-toggle="tab">业务信息</a>
+		</li>
+		<li role="presentation" class="">
+			<a href="#actionInfo" aria-controls="actionInfo" role="tab" data-toggle="tab">动作信息</a>
+		</li>
+	</ul>
 
-		</tr>
-		<tr th:if="${size} < 1">
-			<td colspan="6" class="text-center">暂无数据</td>
-		</tr>
-		<tr name="module" class="" th:each="field : ${fieldList}" th:id="${field.id}" ondblclick="dblclick(this)"
-			onclick="selected(this)">
-			<td><p th:text="${field.name}"></p></td>
-			<td><p th:text="${field.displayAs}"></p></td>
-			<td><p th:text="${field.type}"></p></td>
-			<td><p th:text="${field.schemaAs}"></p></td>
-			<td><p th:text="${field.description}"></p></td>
-			<td><p th:text="${field.format}"></p></td>
-		</tr>
-	</table>
-	<hr>
-	<div class="row">
-		<div class="col-lg-4 col-md-4">
-			<p th:text="'共'+${size}+'条'"></p>
+	<br>
+	<div class="tab-content">
+		<!--字段信息start-->
+		<div id="fieldInfo" class="tab-pane active">
+			<div class="row">
+				<div class="col-lg-4 col-sm-12 col-md-8">
+					<input type="button" value="新增" class="btn btn-default">
+					<input type="button" value="编辑" class="btn btn-default">
+					<input type="button" value="删除" class="btn btn-default">
+					<input type="button" value="刷新" class="btn btn-default">
+				</div>
+			</div>
+			<br>
+			<table class="table table-hover">
+				<tr>
+					<!--<th>id</th>-->
+					<!--<th>所属库</th>-->
+					<!--<th>所属表</th>-->
+					<th>字段名</th>
+					<th>字段显示名</th>
+					<th>字段类型</th>
+					<th>schema</th>
+					<th>描述</th>
+					<th>格式</th>
+
+				</tr>
+				<tr th:if="${size} < 1">
+					<td colspan="6" class="text-center">暂无数据</td>
+				</tr>
+				<tr name="module" class="" th:each="field : ${fieldList}" th:id="${field.id}"
+					ondblclick="dblclick(this)"
+					onclick="selected(this)">
+					<td><p th:text="${field.name}"></p></td>
+					<td><p th:text="${field.displayAs}"></p></td>
+					<td><p th:text="${field.type}"></p></td>
+					<td><p th:text="${field.schemaAs}"></p></td>
+					<td><p th:text="${field.description}"></p></td>
+					<td><p th:text="${field.format}"></p></td>
+				</tr>
+			</table>
+			<hr>
+			<div class="row">
+				<div class="col-lg-4 col-md-4">
+					<p th:text="'共'+${size}+'条'"></p>
+				</div>
+			</div>
+		</div>
+		<!--字段信息end-->
+		<div id="businessInfo" class="tab-pane">
+			<h1>业务</h1>
 		</div>
 	</div>
 </div>
@@ -132,20 +164,19 @@
 	function createUpShow(type) {
 
 	}
+
 	// 初始化页面
 	$(function () {
 		$('#_p_format').hide()
 		$("#p_type").change(function () {
-			var type =  $(this).val()
-			if(type == 'date'){
+			var type = $(this).val()
+			if (type == 'date') {
 				dateFormats()
-			}else{
+			} else {
 				$('#_p_format').hide(50) // 隐藏日期格式字段
 			}
 		})
 	})
-
-
 
 
 	// dblclick
@@ -169,19 +200,20 @@
 					$("#p_defaultValue").val(field.defaultValue);
 					$("#p_format").val(field.format);
 					$("#createUp").modal('show'); // 显示窗口
-					types(field.type,field.format)
+					types(field.type, field.format)
 				} else {
 					alert(data.msg)
 				}
 			}
 		});
 	}
+
 	// 选中
 	function selected(e) {
 		$("[name='module']").removeClass("info");
 		$(e).addClass('info')
-
 	}
+
 	// 加载日期格式
 	function dateFormats(format) {
 		$.ajax({
@@ -192,18 +224,19 @@
 				$('#_p_format').show(50) // 显示日期格式字段
 				$('#p_format').html("")
 				for (var i = 0; i < data.length; i++) {
-					if(format == data[i].key){
-						$('#p_format').append("<option  selected value='"+data[i].key+"' >"+data[i].value+"</option>");
-					}else{
-						$('#p_format').append("<option value='"+data[i].key+"' >"+data[i].value+"</option>");
+					if (format == data[i].key) {
+						$('#p_format').append("<option  selected value='" + data[i].key + "' >" + data[i].value + "</option>");
+					} else {
+						$('#p_format').append("<option value='" + data[i].key + "' >" + data[i].value + "</option>");
 					}
 				}
 
 			}
 		});
 	}
+
 	// 加载Type
-	function types(type,format) {
+	function types(type, format) {
 		type = type == undefined ? '' : type;
 		$.ajax({
 			url: "/sys/types",
@@ -212,12 +245,12 @@
 			success: function (data) {
 				$('#p_type').html("")
 				for (var i = 0; i < data.length; i++) {
-					if(type == data[i].key){
-						$('#p_type').append("<option selected  value='"+data[i].key+"' >"+data[i].value+"</option>");
-					}else{
-						$('#p_type').append("<option  value='"+data[i].key+"' >"+data[i].value+"</option>");
+					if (type == data[i].key) {
+						$('#p_type').append("<option selected  value='" + data[i].key + "' >" + data[i].value + "</option>");
+					} else {
+						$('#p_type').append("<option  value='" + data[i].key + "' >" + data[i].value + "</option>");
 					}
-					if(type === 'date'){
+					if (type === 'date') {
 						dateFormats(format)
 					}
 

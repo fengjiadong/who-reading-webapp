@@ -4,6 +4,7 @@ import com.who.read.reading.who.datamodel.Columns;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -20,8 +21,15 @@ public interface EntityMapper {
 	@Select("${sqlStr}")
 	List<Map<String, Object>> list(@Param(value = "sqlStr")String value);
 
+
+	@Select("${sqlStr}")
+	Integer count(@Param(value = "sqlStr")String value);
+
 	@Insert("${sqlStr}")
 	Integer create(@Param(value = "sqlStr")String value);
+
+	@Update("${sqlStr}")
+	Integer update(@Param(value = "sqlStr")String value);
 
 	@Select("SELECT * FROM `dm.type` where id = #{id}")
 	Map<String,Object>  entityInfo(@Param(value = "id") String id);

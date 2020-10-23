@@ -20,6 +20,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -50,6 +51,17 @@ public class EntityManager {
 		return entityService.list(entityCondition);
 	}
 
+	public Integer count(String typeId) {
+		EntityCondition entityCondition = new EntityCondition(typeId);
+		initSql(entityCondition, true);
+		return entityService.count(entityCondition.getSql());
+	}
+
+	public Integer count(EntityCondition entityCondition) {
+		initSql(entityCondition, true);
+		return entityService.count(entityCondition.getSql());
+	}
+
 	public Entity getEntity(EntityCondition entityCondition) {
 		initSql(entityCondition);
 		return entityService.list(entityCondition).get(0);
@@ -62,14 +74,51 @@ public class EntityManager {
 		return getEntity(entityCondition);
 	}
 
+	/**
+	 * 修改实体.
+	 *
+	 * @param entity
+	 * @return .
+	 */
+	public String update(Entity entity) {
+		Map<String, Object> properties = entity.getProperties();
+		Object id = properties.get("id");
+		if (id == null) {
+			return null;
+		}
+		properties.put("typeId", entity.getTypeId());
+		Map<String, Object> entityInfo = entityService.entityInfo(entity.getTypeId());
+		StringBuilder sb = new StringBuilder();
+		sb.append("UPDATE `" + entityInfo.get("name") + "` set ");
 
+		Iterator<String> keys = properties.keySet().iterator();
+		while (keys.hasNext()) {
+			String key = keys.next();
+			Object val = properties.get(key);
+			if (val instanceof Date) {
+				sb.append(key + " = '" + ((Date) val).getTime() + "'");
+			} else {
+				sb.append(key + " = '" + properties.get(key) + "'");
+			}
+
+			if (keys.hasNext()) {
+				sb.append(",");
+			}
+		}
+		sb.append(" where id = " + "'" + id + "'");
+		Integer result = entityService.update(sb.toString());
+		if (result > 0) {
+			return properties.get("id").toString();
+		}
+		return "";
+	}
 
 
 	/**
-	 * 创建实体
+	 * 创建实体 .
 	 *
 	 * @param entity
-	 * @return
+	 * @return .
 	 */
 	public String create(Entity entity) {
 		Map<String, Object> properties = entity.getProperties();
@@ -87,8 +136,14 @@ public class EntityManager {
 		Iterator<String> keys = properties.keySet().iterator();
 		while (keys.hasNext()) {
 			String key = keys.next();
+			Object val = properties.get(key);
 			sb.append("`" + key + "`");
-			values.append("'" + properties.get(key) + "'");
+			if (val instanceof Date) {
+				values.append("'" + ((Date) val).getTime() + "'");
+			} else {
+				values.append("'" + properties.get(key) + "'");
+			}
+
 			if (keys.hasNext()) {
 				sb.append(",");
 				values.append(",");
@@ -104,17 +159,31 @@ public class EntityManager {
 	}
 
 	/**
-	 * 生成查询sql
+	 * 生成查询sql语句
 	 *
 	 * @param entityCondition
 	 */
 	private void initSql(EntityCondition entityCondition) {
+		initSql(entityCondition, false);
+	}
+
+	/**
+	 * 生成查询sql.
+	 *
+	 * @param isCount         是否只查询数据数量
+	 * @param entityCondition entityCondition
+	 */
+	private void initSql(EntityCondition entityCondition, boolean isCount) {
 		Map<String, Object> entity = entityService.entityInfo(entityCondition.getTypeId());
 		entityCondition.setName(entity.get("name").toString());
 		entityCondition.setDisplayName(entity.get("displayName").toString());
 		String name = entityCondition.getName();
 		StringBuilder sb = new StringBuilder();
-		sb.append("SELECT * ");
+		if (isCount) {
+			sb.append("SELECT count(*) ");
+		} else {
+			sb.append("SELECT * ");
+		}
 		sb.append("FROM `" + name + "` WHERE 1=1 ");
 		// 判断条件
 		Map<String, Object> properties = entityCondition.getProperties();
@@ -157,7 +226,13 @@ public class EntityManager {
 			idSql.append(")");
 			sb.append(" AND id in " + idSql.toString());
 		}
-
+		// 分页
+		Integer pageNo = entityCondition.getPageNo();
+		Integer pageSize = entityCondition.getPageSize();
+		if (pageNo != null && pageSize != null && !isCount) {
+			Integer start = (pageNo - 1) * pageSize;
+			sb.append("  limit #{" + start + "}, #{" + pageSize + "}");
+		}
 		entityCondition.setSql(sb.toString());
 	}
 
@@ -200,6 +275,9 @@ public class EntityManager {
 		String field = fieldExpression.getField();
 		Operator operator = fieldExpression.getOperator();
 		Object value = fieldExpression.getValue();
+		if (value == null) {
+			value = "";
+		}
 		StringBuilder sbSql = new StringBuilder(" `" + field + "` ");
 		if (operator == Operator.NotNull) {
 			sbSql.append(" IS NOT NULL and `" + field + "` != ''");
@@ -237,4 +315,6 @@ public class EntityManager {
 		}
 		return "(" + sb.toString() + ")";
 	}
+
+
 }

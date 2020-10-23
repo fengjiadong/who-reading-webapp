@@ -28,6 +28,7 @@
 			<th>模块名称</th>
 			<th>模块描述</th>
 			<th>是否系统模块</th>
+			<th>服务类</th>
 		</tr>
 		<tr th:if="${size} < 1">
 			<td colspan="5" class="text-center">暂无数据</td>
@@ -38,6 +39,7 @@
 			<td><p th:text="${table.properties.displayName}"></p></td>
 			<td><p th:text="${table.properties.describe}"></p></td>
 			<td><p th:text="${table.properties.isSys} == '1'?'是':'否'"></p></td>
+			<td><p th:text="${table.properties.service}"></p></td>
 		</tr>
 	</table>
 	<hr>

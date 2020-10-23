@@ -30,6 +30,14 @@ public class EntityService {
 		return entityMapper.create(sql);
 	}
 
+	public Integer update(String sql) {
+		return entityMapper.update(sql);
+	}
+
+	public Integer count(String sql) {
+		return entityMapper.count(sql);
+	}
+
 	public List<Entity> list(EntityCondition entityCondition) {
 		List<Entity> entityList = new ArrayList<>();
 		List<Map<String, Object>> list = entityMapper.list(entityCondition.getSql());

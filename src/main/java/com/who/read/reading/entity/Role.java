@@ -12,6 +12,9 @@ public class Role {
 	private String introduce;
 	private String parent;
 
+	public Role(){
+
+	}
 	public Role(String id) {
 		this.id = id;
 	}

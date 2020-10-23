@@ -10,6 +10,9 @@ import java.util.List;
  * @Created by fengjiadong
  */
 public class User {
+	public User() {
+
+	}
 	private String id;
 	private String name;
 	private Integer age;

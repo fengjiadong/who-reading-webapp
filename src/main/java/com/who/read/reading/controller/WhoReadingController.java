@@ -7,12 +7,16 @@ import com.who.read.reading.service.RoleService;
 import com.who.read.reading.service.UserService;
 import com.who.read.reading.utils.HttpClient;
 import com.who.read.reading.utils.Options;
+import com.who.read.reading.who.condition.FieldExpression;
+import com.who.read.reading.who.condition.NestedExpression;
+import com.who.read.reading.who.condition.Operator;
 import com.who.read.reading.who.datamodel.Columns;
 import com.who.read.reading.who.datamodel.Entity;
 import com.who.read.reading.who.condition.EntityCondition;
 import com.who.read.reading.who.datamodel.Field;
 import com.who.read.reading.who.datamodel.Menu;
 import com.who.read.reading.who.manager.EntityManager;
+import com.who.read.reading.who.manager.Limit;
 import com.who.read.reading.who.manager.SystemManager;
 import com.who.read.reading.who.manager.UserSystemManager;
 import com.who.read.reading.who.util.UserSessionFactory;
@@ -20,6 +24,7 @@ import org.json.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.http.HttpServletRequest;
@@ -50,7 +55,6 @@ public class WhoReadingController {
 
 	@Autowired
 	private SystemManager systemManager;
-
 
 
 	@RequestMapping("/login.html")
@@ -146,6 +150,7 @@ public class WhoReadingController {
 		request.setAttribute("size", moduleList.size());
 		return "index/dm/dataModule";
 	}
+
 	@RequestMapping("/tableList.html")
 	public String tableList(HttpServletRequest request) {
 		String id = request.getParameter("id");
@@ -163,11 +168,11 @@ public class WhoReadingController {
 		Entity entity = entityManager.getEntity(typeId, Options.Type_Id);
 		List<Field> fields = systemManager.getFields(entity.getProperty("name", String.class), typeId);
 		request.setAttribute("fieldList", fields);
+		request.setAttribute("entity", entity.getProperties());
+		System.out.println(entity.getProperties().toString());
 		request.setAttribute("size", fields.size());
 		return "index/dm/table";
 	}
-
-
 
 
 	@RequestMapping("/option.html")
@@ -177,6 +182,55 @@ public class WhoReadingController {
 
 	@Autowired
 	UserSystemManager userSystemManager;
+
+	@RequestMapping("/person.html")
+	public String person(HttpServletRequest request) {
+		String name = request.getParameter("name");
+		String address = request.getParameter("address");
+		String pageNo = request.getParameter("pageNo") == null ? "1" : request.getParameter("pageNo");
+		String pageSize = request.getParameter("pageSize") == null ? "10" : request.getParameter("pageSize");
+
+
+		EntityCondition entityCondition = new EntityCondition("95f796c12215bb624634d12a9ca9bd8b");
+		entityCondition.addNestedExpression(NestedExpression.Operator.OR,
+				new FieldExpression("name", Operator.Contains, name),
+				new FieldExpression("qq", Operator.Contains, name),
+				new FieldExpression("weixin", Operator.Contains, name),
+				new FieldExpression("phone", Operator.Contains, name)
+		);
+		entityCondition.addNestedExpression(NestedExpression.Operator.OR,
+				new FieldExpression("address", Operator.Contains, address),
+				new FieldExpression("zone", Operator.Contains, address)
+		);
+
+		entityCondition.setPageNo(Integer.valueOf(pageNo));
+		entityCondition.setPageNo(Integer.valueOf(pageSize));
+		List<Entity> list = entityManager.list(entityCondition);
+		Integer count = entityManager.count(entityCondition);
+
+
+		Integer pageCount = (count / Integer.valueOf(pageSize)) + (count % Integer.valueOf(pageSize) > 0 ? 1 : 0);
+
+		request.setAttribute("users", list);
+		request.setAttribute("pageSize", pageSize);
+		request.setAttribute("count", count);
+		request.setAttribute("pageNo", Integer.valueOf(pageNo));
+		request.setAttribute("pageCount", pageCount);
+		request.setAttribute("userSize", list.size());
+		request.setAttribute("name", name);
+		request.setAttribute("address", address);
+
+		List<Integer> pageArr = new ArrayList<>();
+		for (Integer integer = Integer.valueOf(pageNo) - 3 < 1 ? 1 : Integer.valueOf(pageNo) - 3; integer <= Integer.valueOf(pageNo); integer++) {
+			pageArr.add(integer);
+		}
+		for (Integer i = Integer.parseInt(pageNo) + 1; i <= pageCount && i < Integer.parseInt(pageNo) + 3; i++) {
+			pageArr.add(i);
+		}
+		request.setAttribute("pageArr", pageArr);
+		return "index/person/person";
+	}
+
 
 	@RequestMapping("/work.html")
 	public String work(HttpServletRequest request) throws IOException {
@@ -215,6 +269,16 @@ public class WhoReadingController {
 
 		}
 		return "index/option/option";
+	}
+
+
+	@RequestMapping("/show/{fileId}")
+	public String person(HttpServletRequest request, @PathVariable("fileId") String fileId) {
+		Entity entity = entityManager.getEntity(fileId, Options.FileTypeId);
+		request.setAttribute("name", entity.getProperty("name"));
+		request.setAttribute("type", entity.getProperty("type"));
+		request.setAttribute("base64", entity.getProperty("base64"));
+		return "index/show/show";
 	}
 
 }

@@ -10,11 +10,28 @@ spring:
     password: 1598
     url: jdbc:mysql://localhost:3306/who_read?useUnicode=true&characterEncoding=UTF-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
     driver-class-name: com.mysql.cj.jdbc.Driver
-mybatis:
+mybatis-plus:
   mapper-locations: classpath:mapping/*Mapping.xml
   configuration:
+    map-underscore-to-camel-case: true
+     # 全局地开启或关闭配置文件中的所有映射器已经配置的任何缓存，默认为 true
+    cache-enabled: false
+    #如果查询结果中包含空值的列，则 MyBatis 在映射的时候，不会映射这个字段
+    call-setters-on-nulls: true
+    # 这个配置会将执行的sql打印出来，在开发或测试的时候可以用
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
-
+  global-config:
+      db-config:
+        #表名下划线命名默认true
+        table-underline: true
+        #id类型
+        id-type: auto
+        #是否开启大写命名，默认不开启
+        #capital-mode: false
+        #逻辑已删除值,(逻辑删除下有效) 需要注入逻辑策略LogicSqlInjector 以@Bean方式注入
+#        logic-not-delete-value: 0
+        #逻辑未删除值,(逻辑删除下有效)
+#        logic-delete-value: 1
 #showSql
 logging:
   level:

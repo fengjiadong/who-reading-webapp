@@ -32,6 +32,9 @@ public class EntityCondition {
 	private String sqlDispaly;
 	private List<Expression> expressions;
 
+	private Integer pageNo;
+	private Integer pageSize;
+
 
 	public String getTypeId() {
 		return typeId;
@@ -121,5 +124,21 @@ public class EntityCondition {
 
 	public EntityCondition addNestedExpression(NestedExpression.Operator operator, Expression... expressions) {
 		return this.addExpression(new NestedExpression(operator, expressions));
+	}
+
+	public Integer getPageNo() {
+		return pageNo;
+	}
+
+	public void setPageNo(Integer pageNo) {
+		this.pageNo = pageNo;
+	}
+
+	public Integer getPageSize() {
+		return pageSize;
+	}
+
+	public void setPageSize(Integer pageSize) {
+		this.pageSize = pageSize;
 	}
 }
