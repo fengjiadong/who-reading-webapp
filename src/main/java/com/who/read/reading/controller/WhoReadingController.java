@@ -10,13 +10,12 @@ import com.who.read.reading.utils.Options;
 import com.who.read.reading.who.condition.FieldExpression;
 import com.who.read.reading.who.condition.NestedExpression;
 import com.who.read.reading.who.condition.Operator;
-import com.who.read.reading.who.datamodel.Columns;
 import com.who.read.reading.who.datamodel.Entity;
 import com.who.read.reading.who.condition.EntityCondition;
 import com.who.read.reading.who.datamodel.Field;
 import com.who.read.reading.who.datamodel.Menu;
 import com.who.read.reading.who.manager.EntityManager;
-import com.who.read.reading.who.manager.Limit;
+import com.who.read.reading.who.manager.Order;
 import com.who.read.reading.who.manager.SystemManager;
 import com.who.read.reading.who.manager.UserSystemManager;
 import com.who.read.reading.who.util.UserSessionFactory;
@@ -30,6 +29,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -204,13 +204,14 @@ public class WhoReadingController {
 		);
 
 		entityCondition.setPageNo(Integer.valueOf(pageNo));
-		entityCondition.setPageNo(Integer.valueOf(pageSize));
+		entityCondition.setPageSize(Integer.valueOf(pageSize));
+		Order order = new Order(Order.Sort.desc, Arrays.asList("num"));
+		entityCondition.setOrder(order);
 		List<Entity> list = entityManager.list(entityCondition);
 		Integer count = entityManager.count(entityCondition);
 
 
 		Integer pageCount = (count / Integer.valueOf(pageSize)) + (count % Integer.valueOf(pageSize) > 0 ? 1 : 0);
-
 		request.setAttribute("users", list);
 		request.setAttribute("pageSize", pageSize);
 		request.setAttribute("count", count);
@@ -228,6 +229,7 @@ public class WhoReadingController {
 			pageArr.add(i);
 		}
 		request.setAttribute("pageArr", pageArr);
+
 		return "index/person/person";
 	}
 
@@ -273,12 +275,20 @@ public class WhoReadingController {
 
 
 	@RequestMapping("/show/{fileId}")
-	public String person(HttpServletRequest request, @PathVariable("fileId") String fileId) {
+	public String show(HttpServletRequest request, @PathVariable("fileId") String fileId) {
 		Entity entity = entityManager.getEntity(fileId, Options.FileTypeId);
 		request.setAttribute("name", entity.getProperty("name"));
 		request.setAttribute("type", entity.getProperty("type"));
 		request.setAttribute("base64", entity.getProperty("base64"));
 		return "index/show/show";
+	}
+
+	@RequestMapping("/person/info/{id}")
+	public String personInfo(HttpServletRequest request, @PathVariable("id") String id) {
+		request.setAttribute("id", id);
+		Entity entity = entityManager.getEntity(id, Options.PersonTypeId);
+		request.setAttribute("entity", entity);
+		return "index/person/person_info";
 	}
 
 }

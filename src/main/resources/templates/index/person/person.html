@@ -3,6 +3,7 @@
 <head>
 	<meta charset="UTF-8">
 	<title>人员管理</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 	<link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
 	<!-- jQuery (Bootstrap 的所有 JavaScript 插件都依赖 jQuery，所以必须放在前边) -->
 	<script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
@@ -41,8 +42,8 @@
 				<th>姓名</th>
 				<th>年龄</th>
 				<th>地区</th>
-				<th>地址</th>
-				<th>手机号</th>
+				<th class="hidden-xs">地址</th>
+				<th class="hidden-xs">手机号</th>
 				<th>一次</th>
 				<th>两次</th>
 				<th>包夜</th>
@@ -55,15 +56,18 @@
 				<td><p th:text="${user.properties.name}"></p></td>
 				<td><p th:text="${user.properties.age}"></p></td>
 				<td><p th:text="${user.properties.zone}"></p></td>
-				<td><p th:text="${user.properties.address}"></p></td>
-				<td><p th:text="${user.properties.phone}"></p></td>
+				<td class="hidden-xs"><p th:text="${user.properties.address}"></p></td>
+				<td class="hidden-xs"><p th:text="${user.properties.phone}"></p></td>
 				<td><p th:text="${user.properties.priceOne}"></p></td>
 				<td><p th:text="${user.properties.priceTow}"></p></td>
 				<td><p th:text="${user.properties.priceBy}"></p></td>
 				<td>
 					<a th:value="${user.properties.id}" href="javascript:void(0);" name="editPerson">编辑</a>
+					<a th:href="'person/info/'+${user.properties.id}" name="showPerson">查看</a>
+					<!--<a th:value="${user.properties.id}" href="javascript:void(0);" name="showPerson">查看</a>-->
+
 					<!--<a th:value="${user.properties.id}" href="javascript:createUpShow('update',this);">编辑</a>-->
-					<a href="javascript:void(0);">删除</a>
+					<!--<a href="javascript:void(0);">删除</a>-->
 				</td>
 			</tr>
 		</table>
@@ -125,6 +129,7 @@
 								<label for="num" class="col-sm-2 control-label">序号</label>
 								<div class="col-sm-10">
 									<input id="num" type="text" class="form-control " disabled placeholder="新增之后自动生成">
+									<input id="id" type="hidden" class="form-control ">
 								</div>
 							</div>
 							<div class="form-group">
@@ -207,6 +212,7 @@
 							</div>
 							<div class="form-group">
 								<div class=" col-sm-10 col-sm-offset-2" id="images">
+
 								</div>
 							</div>
 							<!--<div class="form-group">-->
@@ -239,7 +245,6 @@
 
 	var files = []
 
-
 	function upimg() {
 		var file = document.getElementById("img").files[0];
 		//声明js的文件流
@@ -261,15 +266,44 @@
 					data: param,
 					dataType: "json",
 					success: function (data) {
-						console.log(data)
 						files.push(data.fileId)
-						$("#images").prepend("<a target='_blank' href=\"http://localhost:8080/show/" + data.fileId + "\">" + file.name + "</a><br>");
+						prependHtml(data.fileId, file.name)
 					}
 				})
 			}
 
 		}
 
+	}
+
+	function prependHtml(fileId, name) {
+		$("#images").prepend("<span><a target='_blank' value='" + fileId + "' href=\"/show/" + fileId + "\">" + name + "</a><a name='deleteImage' href=\"javascript:moveImage('" + fileId + "')\" style='color: red;' class='glyphicon glyphicon-remove'></a><br></span>");
+	}
+
+	function moveImage(fileId) {
+		for (var i = 0; i < files.length; i++) {
+			if (files[i] === fileId) {
+				// console.log(i)
+				// $("#images").children().eq(i).hide(200)
+				// $("#images").children().eq(i).remove()
+				files.splice(i,1);
+			}
+		}
+		var images = $("#images").children();
+		console.log("images:"+images.length)
+		for(var i = 0;i < images.length;i++){
+			console.log(images.eq(i).children().eq(0).attr("value"))
+			if (images.eq(i).children().eq(0).attr("value") === fileId) {
+				console.log("--"+images.eq(i).attr("value"))
+				images.eq(i).fadeOut(300)
+				setInterval(function(){
+					images.eq(i).remove()
+				},300)
+
+			}
+		}
+		console.log("删除后", files)
+		// console.log($("#images").children().eq(0).html())
 	}
 
 	function addPerson() {
@@ -305,8 +339,47 @@
 		})
 	}
 
+	function savePerson() {
+		console.log(files)
+		var param = {
+			id: $("#id").val(),
+			num: $("#num").val(),
+			name: $("#name").val(),
+			address: $("#address").val(),
+			zone: $("#zone").val(),
+			type: $("#type").val(),
+			files: files,
+			age: $("#age").val(),
+			qq: $("#qq").val(),
+			weixin: $("#weixin").val(),
+			priceBy: $("#priceBy").val(),
+			priceOne: $("#priceOne").val(),
+			priceTow: $("#priceTow").val(),
+			timeBy: $("#timeBy").val(),
+			remarks: $("#remarks").val(),
+			phone: $("#phone").val()
+		}
+		console.log("保存参数",param)
+		$.ajax({
+			url: "/person/update",
+			type: "POST",
+			data: param,
+			dataType: "json",
+			success: function (data) {
+				console.log(data)
+				if (data.code == "1") {
+					refresh();
+					$("#createUp").modal('hide');
+				}
+			}
+		})
+	}
+
 	function empty() {
 		files = [];
+		$("#num").val("")
+		$("#id").val("")
+		$("#images").html("")
 		$("#name").val("");
 		$("#address").val("");
 		$("#zone").val("");
@@ -347,6 +420,8 @@
 			success: function (data) {
 				console.log(data)
 				files = [];
+				$("#id").val(data.id);
+				$("#num").val(data.num);
 				$("#name").val(data.name);
 				$("#address").val(data.address);
 				$("#zone").val(data.zone);
@@ -360,8 +435,16 @@
 				$("#timeBy").val(data.timeBy);
 				$("#remarks").val(data.remarks);
 				$("#phone").val(data.phone);
-				files = eval(data.imgs)
-				console.log(files)
+				if(data.imgs == "null" || data.imgs === null){
+					console.log("m没有图片")
+				}else{
+					files = eval(data.imgs)
+					for (var i = 0; i < files.length; i++) {
+						prependHtml(files[i], "图片" + i + "-")
+					}
+				}
+
+				// console.log(files)
 			}
 		})
 	}
@@ -388,7 +471,12 @@
 			getPerson($(this).attr("value"))
 			createUpShow("updateTime")
 		})
+		$("[name='showPerson']").click(function () {
+			// console.log("--",$(this).attr("value"))
 
+			// getPerson($(this).attr("value"))
+			// createUpShow("updateTime")
+		})
 	})
 
 	function refresh() {

@@ -46,7 +46,7 @@ public class EntityService {
 			Entity entity = new Entity(entityCondition.getTypeId());
 			entity.setId(list.get(i).get("id").toString());
 			Map<String, Object> paoperties = list.get(i);
-			entity.setProperties(paoperties);
+
 			// 寻找显示值--start
 			//fieldDisplay
 			HashMap<String, Object> displayMap = new HashMap<>(paoperties);
@@ -57,8 +57,10 @@ public class EntityService {
 				if (displayMap.containsKey(fieldName)) {
 					// 表示有这个字段，然后用这个字段去查询对应的值并替换原有的值。
 					displayMap.put(fieldName, getDisplay(fieldMap, displayMap.get(fieldName)));
+					paoperties.put(fieldName, getPropertyOther(fieldMap, displayMap.get(fieldName)));
 				}
 			}
+			entity.setProperties(paoperties);
 			entity.setDisplays(displayMap);
 			//--end
 			entity.setTypeId(entityCondition.getTypeId());
@@ -76,13 +78,32 @@ public class EntityService {
 		if ("reference".equals(type.toString())) {
 			String sql = "select name from `" + schema + "` where id='" + value + "'";
 			Object o = entityMapper.fieldDisplay(sql);
+			if (o == null) {
+				return "entity not fount";
+			}
 			return o;
 		} else if ("option".equals(type.toString())) {
 			String sql = "select name from `dm.option` where id= '" + value + "'";
 			Object o = entityMapper.fieldDisplay(sql);
 			return o;
+		} else if ("array".equals(type.toString())) {
+
 		}
-		return "entity not fount";
+		return value;
+	}
+
+	public Object getPropertyOther(Map<String, Object> fieldMap, Object value) {
+		Object type = fieldMap.get("type");
+//		Object schema = fieldMap.get("schema");
+		if (value == null) {
+			return value;
+		}
+		if ("array".equals(type.toString())) {
+			String array = value.toString();
+			String[] ar = array.substring(1, array.length() - 1).replace("\"", "").split(",");
+			return ar;
+		}
+		return value;
 	}
 
 	public Map<String, Object> entityInfo(String id) {
@@ -91,6 +112,7 @@ public class EntityService {
 
 	/**
 	 * 得到数据库表结构
+	 *
 	 * @param table
 	 * @return
 	 */
@@ -99,7 +121,7 @@ public class EntityService {
 	}
 
 	public Columns getColumnById(String id) {
-		return entityMapper.getColumnById(Options.Db_Name, "%"+id+"%");
+		return entityMapper.getColumnById(Options.Db_Name, "%" + id + "%");
 	}
 
 

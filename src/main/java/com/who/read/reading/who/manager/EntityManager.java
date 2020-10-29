@@ -226,13 +226,24 @@ public class EntityManager {
 			idSql.append(")");
 			sb.append(" AND id in " + idSql.toString());
 		}
+		// 排序
+		Order order = entityCondition.getOrder();
+		if (order != null && order.getFields() != null) {
+			StringBuilder orderStr = new StringBuilder();
+			orderStr.append(" order by ");
+			for (String field : order.getFields()) {
+				orderStr.append("`"+field + "`,");
+			}
+			sb.append(orderStr.substring(0, orderStr.length() - 1) + " " + order.getSort().name());
+		}
 		// 分页
 		Integer pageNo = entityCondition.getPageNo();
 		Integer pageSize = entityCondition.getPageSize();
 		if (pageNo != null && pageSize != null && !isCount) {
 			Integer start = (pageNo - 1) * pageSize;
-			sb.append("  limit #{" + start + "}, #{" + pageSize + "}");
+			sb.append("  limit " + start + ", " + pageSize + "");
 		}
+
 		entityCondition.setSql(sb.toString());
 	}
 

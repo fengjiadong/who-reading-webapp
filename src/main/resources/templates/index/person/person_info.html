@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+	<meta charset="UTF-8">
+	<title>人员详情</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+	<link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+	<!-- jQuery (Bootstrap 的所有 JavaScript 插件都依赖 jQuery，所以必须放在前边) -->
+	<script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
+	<!-- 加载 Bootstrap 的所有 JavaScript 插件。你也可以根据需要只加载单个插件。 -->
+	<script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<meta name="referrer" content="never">
+</head>
+<body class="container">
+<!--<p>人员详情</p>-->
+<!--<p th:text="${id}"></p>-->
+<input id="personId" type="hidden" th:value="${id}">
+<br>
+<div class="row">
+	<div class="panel panel-default col-xs-12 col-sm-8">
+		<div class="panel-body row">
+			<div class="col-sm-6 col-xs-12">
+				<div class="row">
+					<div class="col-xs-4 col-sm-2 text-right">姓名:</div>
+					<div class="col-xs-8 col-sm-10 text-muted"><p th:text="${entity.properties.name}" id="name"></p></div>
+				</div>
+				<!--<hr>-->
+				<div class="row">
+					<div class="col-xs-4 col-sm-2 text-right">年龄:</div>
+					<div class="col-xs-8 col-sm-10 text-muted"><p th:text="${entity.properties.age}" id="age"></p></div>
+
+				</div>
+				<div class="row">
+					<div class="col-xs-4 col-sm-2 text-right">区域:</div>
+					<div class="col-xs-8 col-sm-10 text-muted"><p th:text="${entity.properties.zone}" id="zone"></p></div>
+				</div>
+				<div class="row">
+					<div class="col-xs-4 col-sm-2 text-right">地址:</div>
+					<div class="col-xs-8 col-sm-10 text-muted"><p th:text="${entity.properties.address}"id="address"></p></div>
+				</div>
+				<div class="row">
+					<div class="col-xs-4 col-sm-2 text-right">类型:</div>
+					<div class="col-xs-8 col-sm-10 text-muted"><p th:text="${entity.properties.type}" id="type"></p></div>
+				</div>
+				<div class="row">
+					<div class="col-xs-4 col-sm-2 text-right">qq:</div>
+					<div class="col-xs-8 col-sm-10 text-muted"><p th:text="${entity.properties.qq}" id="qq"></p></div>
+				</div>
+				<div class="row">
+					<div class="col-xs-4 col-sm-2 text-right">微信:</div>
+					<div class="col-xs-8 col-sm-10 text-muted"><p th:text="${entity.properties.weixin}" id="weixin"></p></div>
+				</div>
+			</div>
+			<div class="col-sm-6 col-xs-12">
+				<div class="row">
+					<div class="col-xs-4 col-sm-4 text-right">POne价格:</div>
+					<div class="col-xs-8 col-sm-8 text-muted"><p th:text="${entity.properties.priceOne}" id="priceOne"></p></div>
+				</div>
+				<div class="row">
+					<div class="col-xs-4 col-sm-4 text-right">PTow价格:</div>
+					<div class="col-xs-8 col-sm-8 text-muted"><p th:text="${entity.properties.priceTow}" id="priceTow"></p></div>
+				</div>
+				<div class="row">
+					<div class="col-xs-4 col-sm-4 text-right">PBy价格:</div>
+					<div class="col-xs-8 col-sm-8 text-muted"><p th:text="${entity.properties.priceBy}" id="priceBy"></p></div>
+				</div>
+				<div class="row">
+					<div class="col-xs-4 col-sm-4 text-right">timeBy:</div>
+					<div class="col-xs-8 col-sm-8 text-muted"><p th:text="${entity.properties.timeBy}" id="timeBy"></p></div>
+				</div>
+				<div class="row">
+					<div class="col-xs-4 col-sm-4 text-right">手机号:</div>
+					<div class="col-xs-8 col-sm-8 text-muted"><p th:text="${entity.properties.phone}" id="phone"></p></div>
+				</div>
+				<div class="row">
+					<div class="col-xs-4 col-sm-4 text-right">描述:</div>
+					<div class="col-xs-8 col-sm-8 text-muted"><p th:text="${entity.properties.remarks}" id="remarks"></p></div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="col-xs-12 col-sm-6">
+		<div class="row">
+			<div class="col-xs-6 col-md-3" th:each="fileId : ${entity.properties.imgs}">
+				<a th:href="'/file/show/'+${fileId}" class="thumbnail" >
+					<img th:src="'/file/show/'+${fileId}" >
+				</a>
+			</div>
+		</div>
+	</div>
+</div>
+</body>
+</html>
+<script>
+	// // console.log($("#personId").val())
+	// getPerson($("#personId").val())
+	// // 查询人员信息
+	// var files = [];
+	//
+	// function getPerson(id) {
+	// 	$.ajax({
+	// 		url: "/person/get/" + id,
+	// 		type: "POST",
+	// 		dataType: "json",
+	// 		success: function (data) {
+	// 			console.log(data)
+	// 			files = [];
+	// 			$("#id").html(data.id);
+	// 			$("#num").html(data.num);
+	// 			$("#name").html(data.name);
+	// 			$("#address").html(data.address);
+	// 			$("#zone").html(data.zone);
+	// 			$("#type").html(data.type);
+	// 			$("#age").html(data.age);
+	// 			$("#qq").html(data.qq);
+	// 			$("#weixin").html(data.weixin);
+	// 			$("#priceBy").html(data.priceBy);
+	// 			$("#priceOne").html(data.priceOne);
+	// 			$("#priceTow").html(data.priceTow);
+	// 			$("#timeBy").html(data.timeBy);
+	// 			$("#remarks").html(data.remarks);
+	// 			$("#phone").html(data.phone);
+	// 			// if(data.imgs == "null" || data.imgs === null){
+	// 			// 	console.log("m没有图片")
+	// 			// }else{
+	// 			// 	files = eval(data.imgs)
+	// 			// 	for (var i = 0; i < files.length; i++) {
+	// 			// 		prependHtml(files[i], "图片" + i + "-")
+	// 			// 	}
+	// 			// }
+	//
+	// 			// console.log(files)
+	// 		}
+	// 	})
+	// }
+</script>

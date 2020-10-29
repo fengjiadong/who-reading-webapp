@@ -51,7 +51,7 @@ public class PersonnelController {
 		return entityList;
 	}
 
-	//根据关键字得到所有角色
+
 	@RequestMapping("/create")
 	public Object create(HttpServletRequest request) {
 		Map<String, String[]> parameterMap = request.getParameterMap();
@@ -86,7 +86,7 @@ public class PersonnelController {
 		return result.toString();
 	}
 
-	//根据关键字得到所有角色
+
 	@RequestMapping("/update")
 	public Object update(HttpServletRequest request) {
 		JSONObject result = new JSONObject();

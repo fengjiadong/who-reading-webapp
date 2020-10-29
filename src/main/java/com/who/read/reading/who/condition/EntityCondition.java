@@ -1,5 +1,7 @@
 package com.who.read.reading.who.condition;
 
+import com.who.read.reading.who.manager.Order;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -34,7 +36,15 @@ public class EntityCondition {
 
 	private Integer pageNo;
 	private Integer pageSize;
+	private Order order;
 
+	public Order getOrder() {
+		return order;
+	}
+
+	public void setOrder(Order order) {
+		this.order = order;
+	}
 
 	public String getTypeId() {
 		return typeId;

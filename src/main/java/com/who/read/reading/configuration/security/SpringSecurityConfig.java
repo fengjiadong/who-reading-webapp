@@ -42,7 +42,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 				.failureHandler(authenticationFailureHandler) // 自定义登录失败逻辑
 				.and()
 				.authorizeRequests()            // 授权配置
-				.antMatchers("/login", "/login.html", "/api/login",
+				.antMatchers("/login", "/login.html", "/api/login","/person/person_m.html","/file/show/**",
 						"/show/**","/api/logged", "/authentication/require", "/css/**", "/js/**","tools/**","/api/user/entity").permitAll()  // 无需认证
 //				.antMatchers("/index.html").hasRole(Options.Role_Admin)
 				.anyRequest()                   // 所有请求
