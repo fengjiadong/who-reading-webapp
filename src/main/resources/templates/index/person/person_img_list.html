@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+	<meta charset="UTF-8">
+	<title>人员照片</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+	<link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+	<!-- jQuery (Bootstrap 的所有 JavaScript 插件都依赖 jQuery，所以必须放在前边) -->
+	<script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
+	<!-- 加载 Bootstrap 的所有 JavaScript 插件。你也可以根据需要只加载单个插件。 -->
+	<script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</head>
+<body class="container">
+<!--<p th:text="${userSize}"></p>-->
+<!--<p th:text="${pageNo}"></p>-->
+<!--<p th:text="${pageSize}"></p>-->
+<!--<p th:text="${key}"></p>-->
+<form action="/person/img/list" id="search">
+	<div class="container-fluid">
+		<br>
+		<div class="row">
+			<input type="hidden" id="pageNo" name="pageNo" th:value="${pageNo}">
+			<input type="hidden" id="pageSize" name="pageSize" th:value="${pageSize}">
+			<div class="col-lg-3 col-sm-12 col-md-4">
+				<input type="text" th:value="${key}" name="key" class="form-control" placeholder="姓名/手机号/QQ/微信/地区/地址">
+			</div>
+			<div class="col-lg-2 col-sm-12 col-md-4">
+				<input type="submit" value="查询" class="btn btn-default">
+				<input type="button" value="刷新" class="btn btn-default" onclick="refresh()">
+			</div>
+		</div>
+	</div>
+</form>
+<hr>
+<div th:each="user,userStat : ${users}">
+	<!--<p th:text="${userStat.count+3}"></p>-->
+	<!--<p th:text="${userStat.count+3}%4"></p>-->
+	<div class="row" th:if="${userStat.index}%4 == 0 ">
+		<div th:each="count:${#numbers.sequence(0,3)}">
+
+			<!--循环4次，拿数据-->
+			<div class="col-sm-12 col-md-3" th:if="${userStat.index+count} < ${userStat.size}">
+				<!---->
+				<a class="thumbnail" th:href="'/person/info/'+${users[userStat.index+count].properties.id}">
+					<img style="object-fit: cover;height: 350px;width: 100%;"
+						 th:src="'/file/show/'+${users[userStat.index+count].properties.imgs[0]}">
+					<div class="caption">
+						<h3 th:text="${users[userStat.index+count].properties.name}"></h3>
+						<!--<p th:text="${userStat}"></p>-->
+						<p class="text-muted">
+							<span th:text="${users[userStat.index+count].properties.zone}"></span>
+						</p>
+						<p class="text-muted">
+
+							<span th:text="${users[userStat.index+count].properties.type}"></span>
+							<span th:text="${users[userStat.index+count].properties.age}"></span>岁
+						</p>
+						<p class="text-muted">
+							<span th:if="${users[userStat.index+count].properties.priceOne}">
+								1p:￥<span th:text="${users[userStat.index+count].properties.priceOne}"></span>
+							</span>
+							<span th:if="${users[userStat.index+count].properties.priceTow}">
+								2p:￥<span th:text="${users[userStat.index+count].properties.priceTow}"></span>
+							</span>
+							<br>
+							<span th:if="${users[userStat.index+count].properties.priceBy}">
+								by:￥<span th:text="${users[userStat.index+count].properties.priceBy}"></span>
+								 &nbsp;&nbsp;<span th:text="${users[userStat.index+count].properties.timeBy}"></span>
+							</span>
+
+							<!--<span th:text="${user.properties.priceTow}"> </span>-->
+							<!--<span th:text="${user.properties.priceBy}"></span>-->
+						</p>
+						<!--<p>描述：</p>-->
+						<hr>
+						<p class="text-muted" th:text="${users[userStat.index+count].properties.remarks}"></p>
+					</div>
+				</a>
+				<!---->
+			</div>
+		</div>
+	</div>
+</div>
+<!--分页-->
+<hr>
+<div class="row">
+	<div class="col-lg-4 col-md-4">
+		<p th:text="'共'+${pageCount}+'页'+${count}+'条'"></p>
+		<p th:text="'当前页显示：'+${userSize}+'条'"></p>
+	</div>
+
+	<div th:if="${pageCount} gt 1" class="col-md-5 col-sm-offset-0 col-md-offset-3">
+		<!--分页控件，可复用-->
+		<nav aria-label="Page navigation ">
+			<ul class="pagination">
+				<li th:if="${pageNo} gt 1" id="prev">
+					<a href="#" aria-label="Previous">
+						<span aria-hidden="true">&laquo;</span>
+					</a>
+				</li>
+				<li name="page" th:if="${pageNo} > 4"><a href="#" value="1">1</a></li>
+				<li th:if="${pageNo} > 5"><a>....</a></li>
+
+				<li name="page" th:each="num : ${pageArr}" th:classappend="${pageNo} == ${num}?'active':''"><a
+						href="#" th:value="${num}" th:text="${num}"></a></li>
+
+				<li th:if="${pageNo} < ${pageCount}-3"><a>....</a></li>
+				<li name="page" th:if="${pageNo} < ${pageCount}-2"><a href="#" th:value="${pageCount}"
+																	  th:text="${pageCount}"></a></li>
+
+				<li th:if="${pageNo} lt ${pageCount}" id="next">
+					<a href="#" aria-label="Next">
+						<span aria-hidden="true">&raquo;</span>
+					</a>
+				</li>
+			</ul>
+		</nav>
+	</div>
+</div>
+
+</body>
+<script>
+	// 分页控件
+	$(function () {
+		$("[name='page']").on("click", 'a', function () {
+			$("#pageNo").val($(this).attr("value"))
+			$("#search").submit()
+		})
+
+		$("#prev").click(function () {
+			var pageNo = $("#pageNo").val() - 1
+			$("#pageNo").val(pageNo)
+			$("#search").submit()
+		})
+		$("#next").click(function () {
+			var pageNo = Number($("#pageNo").val()) + 1
+			$("#pageNo").val(pageNo)
+			$("#search").submit()
+		})
+
+	})
+</script>
+</html>
+
+
+<!--&lt;!&ndash;循环4次，拿数据&ndash;&gt;-->

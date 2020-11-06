@@ -20,6 +20,8 @@ import com.who.read.reading.who.manager.SystemManager;
 import com.who.read.reading.who.manager.UserSystemManager;
 import com.who.read.reading.who.util.UserSessionFactory;
 import org.json.JSONArray;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -28,8 +30,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -40,6 +44,7 @@ import java.util.List;
 @Controller
 public class WhoReadingController {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(WhoReadingController.class);
 
 	@Autowired
 	private UserService userService;
@@ -191,7 +196,7 @@ public class WhoReadingController {
 		String pageSize = request.getParameter("pageSize") == null ? "10" : request.getParameter("pageSize");
 
 
-		EntityCondition entityCondition = new EntityCondition("95f796c12215bb624634d12a9ca9bd8b");
+		EntityCondition entityCondition = new EntityCondition(Options.PersonTypeId);
 		entityCondition.addNestedExpression(NestedExpression.Operator.OR,
 				new FieldExpression("name", Operator.Contains, name),
 				new FieldExpression("qq", Operator.Contains, name),
@@ -234,46 +239,6 @@ public class WhoReadingController {
 	}
 
 
-	@RequestMapping("/work.html")
-	public String work(HttpServletRequest request) throws IOException {
-		String url = "http://127.0.0.1:4399/rmtj/api/test/test3.jsp";
-		String s = HttpClient.doGet(url);
-		JSONArray jsonArray = new JSONArray(s.trim());
-		for (int i = 0; i < jsonArray.length(); i++) {
-			try {
-//				JSONObject jsonObject = jsonArray.getJSONObject(i);
-//				Object name = JsonManager.getValue(jsonObject, "name");
-//				Object age = JsonManager.getValue(jsonObject, "age");
-//				Object id = JsonManager.getValue(jsonObject, "id");
-//				Object username = JsonManager.getValue(jsonObject, "username");
-//				Object gender = JsonManager.getValue(jsonObject, "gender");
-//				Object idNumber = JsonManager.getValue(jsonObject, "idNumber");
-//				Object phone = JsonManager.getValue(jsonObject, "phone");
-//				Object email = JsonManager.getValue(jsonObject, "email");
-//				User user = new User();
-//				user.setUserName(username.toString());
-//				user.setPassword(username.toString());
-//				user.setId(id.toString());
-//				user.setPhone(phone.toString());
-//				user.setEmail(email.toString());
-//				user.setIdNumber(idNumber.toString());
-//				user.setGender("Male".equals(gender.toString()) ? "1" : "2");
-//				user.setName(name.toString());
-//				user.setAge(Integer.parseInt(age.toString()));
-//				ArrayList<Role> roles = new ArrayList<>();
-//				roles.add(new Role(Options.Role_Staff));
-//				user.setRoles(roles);
-//				System.out.println(i+"--"+name + "--" + age);
-//				userSystemManager.createUser(user);
-			} catch (Exception e) {
-
-			}
-
-		}
-		return "index/option/option";
-	}
-
-
 	@RequestMapping("/show/{fileId}")
 	public String show(HttpServletRequest request, @PathVariable("fileId") String fileId) {
 		Entity entity = entityManager.getEntity(fileId, Options.FileTypeId);
@@ -288,7 +253,92 @@ public class WhoReadingController {
 		request.setAttribute("id", id);
 		Entity entity = entityManager.getEntity(id, Options.PersonTypeId);
 		request.setAttribute("entity", entity);
+		LOGGER.info(getIpAddress(request) + "用户访问了[" + entity.getProperty("name") + "]详情页,时间是：" + DateFormat.getInstance().format(new Date()));
 		return "index/person/person_info";
+	}
+
+	@RequestMapping("/person/img/list")
+	public String personImgList(HttpServletRequest request) {
+		LOGGER.info(getIpAddress(request) + "用户访问了 人员列表方法,时间是：" + DateFormat.getInstance().format(new Date()));
+		String key = request.getParameter("key");
+		Integer pageNo = request.getParameter("pageNo") == null ? 1 : Integer.valueOf(request.getParameter("pageNo"));
+		Integer pageSize = request.getParameter("pageSize") == null ? 20 : Integer.valueOf(request.getParameter("pageSize"));
+
+		EntityCondition entityCondition = new EntityCondition(Options.PersonTypeId);
+		entityCondition.setPageSize(pageSize);
+		entityCondition.setPageNo(pageNo);
+		entityCondition.addNestedExpression(NestedExpression.Operator.OR,
+				new FieldExpression("name", Operator.Contains, key),
+				new FieldExpression("qq", Operator.Contains, key),
+				new FieldExpression("weixin", Operator.Contains, key),
+				new FieldExpression("address", Operator.Contains, key),
+				new FieldExpression("zone", Operator.Contains, key),
+				new FieldExpression("remarks", Operator.Contains, key),
+				new FieldExpression("phone", Operator.Contains, key)
+		);
+		Order order = new Order(Order.Sort.desc, Arrays.asList("num"));
+		entityCondition.setOrder(order);
+
+		entityCondition.addFieldExpression("imgs", Operator.NotNull, "string");
+		List<Entity> list = entityManager.list(entityCondition);
+
+		Integer count = entityManager.count(entityCondition);
+
+
+		Integer pageCount = (count / Integer.valueOf(pageSize)) + (count % Integer.valueOf(pageSize) > 0 ? 1 : 0);
+		request.setAttribute("key", key);
+		request.setAttribute("pageSize", pageSize);
+		request.setAttribute("count", count);
+		request.setAttribute("userSize", list.size());
+		request.setAttribute("pageNo", pageNo);
+		request.setAttribute("users", list);
+		request.setAttribute("pageCount", pageCount);
+
+		List<Integer> pageArr = new ArrayList<>();
+		for (Integer integer = pageNo - 3 < 1 ? 1 : pageNo - 3; integer <= pageNo; integer++) {
+			pageArr.add(integer);
+		}
+		for (Integer i = pageNo + 1; i <= pageCount && i < pageNo + 3; i++) {
+			pageArr.add(i);
+		}
+		request.setAttribute("pageArr", pageArr);
+
+		return "index/person/person_img_list";
+	}
+
+
+	/**
+	 * 获取用户真实IP地址，不使用request.getRemoteAddr();的原因是有可能用户使用了代理软件方式避免真实IP地址,
+	 * <p>
+	 * 可是，如果通过了多级反向代理的话，X-Forwarded-For的值并不止一个，而是一串IP值，究竟哪个才是真正的用户端的真实IP呢？
+	 * 答案是取X-Forwarded-For中第一个非unknown的有效IP字符串。
+	 * <p>
+	 * 如：X-Forwarded-For：192.168.1.110, 192.168.1.120, 192.168.1.130,
+	 * 192.168.1.100
+	 * <p>
+	 * 用户真实IP为： 192.168.1.110
+	 *
+	 * @param request
+	 * @return
+	 */
+	public static String getIpAddress(HttpServletRequest request) {
+		String ip = request.getHeader("x-forwarded-for");
+		if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+			ip = request.getHeader("Proxy-Client-IP");
+		}
+		if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+			ip = request.getHeader("WL-Proxy-Client-IP");
+		}
+		if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+			ip = request.getHeader("HTTP_CLIENT_IP");
+		}
+		if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+			ip = request.getHeader("HTTP_X_FORWARDED_FOR");
+		}
+		if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+			ip = request.getRemoteAddr();
+		}
+		return ip;
 	}
 
 }

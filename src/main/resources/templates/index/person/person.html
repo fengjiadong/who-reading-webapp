@@ -277,7 +277,7 @@
 	}
 
 	function prependHtml(fileId, name) {
-		$("#images").prepend("<span><a target='_blank' value='" + fileId + "' href=\"/show/" + fileId + "\">" + name + "</a><a name='deleteImage' href=\"javascript:moveImage('" + fileId + "')\" style='color: red;' class='glyphicon glyphicon-remove'></a><br></span>");
+		$("#images").prepend("<span><a target='_blank' value='" + fileId + "' href=\"/file/show/" + fileId + "\">" + name + "</a><a name='deleteImage' href=\"javascript:moveImage('" + fileId + "')\" style='color: red;' class='glyphicon glyphicon-remove'></a><br></span>");
 	}
 
 	function moveImage(fileId) {

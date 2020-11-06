@@ -43,6 +43,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 				.and()
 				.authorizeRequests()            // 授权配置
 				.antMatchers("/login", "/login.html", "/api/login","/person/person_m.html","/file/show/**",
+						"/person/img/list","/person/info/**",
 						"/show/**","/api/logged", "/authentication/require", "/css/**", "/js/**","tools/**","/api/user/entity").permitAll()  // 无需认证
 //				.antMatchers("/index.html").hasRole(Options.Role_Admin)
 				.anyRequest()                   // 所有请求

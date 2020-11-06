@@ -100,8 +100,12 @@ public class EntityService {
 		}
 		if ("array".equals(type.toString())) {
 			String array = value.toString();
-			String[] ar = array.substring(1, array.length() - 1).replace("\"", "").split(",");
-			return ar;
+			try {
+				String[] ar = array.substring(1, array.length() - 1).replace("\"", "").split(",");
+				return ar;
+			} catch (Exception e) {
+				return new String[]{};
+			}
 		}
 		return value;
 	}
